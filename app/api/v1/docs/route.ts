@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { BASE_URL } from '@/lib/site-config'
 
 const DOCS_DIR = process.cwd()
 
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category')
   const format = searchParams.get('format') || 'json'
   
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  const baseUrl = BASE_URL
   
   const docs: DocMetadata[] = []
   

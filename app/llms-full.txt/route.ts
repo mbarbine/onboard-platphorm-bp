@@ -112,7 +112,7 @@ ${doc.content.slice(0, 3000)}${doc.content.length > 3000 ? '\n... [truncated - f
 
 ### Authentication
 Bearer token authentication for write operations:
-`Authorization: Bearer ${API_KEY_PREFIX}your_api_key_here`
+\`Authorization: Bearer \${API_KEY_PREFIX}your_api_key_here\`
 
 Read operations are public.
 

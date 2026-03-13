@@ -52,7 +52,7 @@ describe('GET /api/v1/keys', () => {
     ] as never)
     mockSql.mockResolvedValueOnce([] as never)
     mockSql.mockResolvedValueOnce([
-      { id: 'k1', name: 'Test Key', key_prefix: 'od_abc', scopes: ['read'] },
+      { id: 'k1', name: 'Test Key', key_prefix: 'ob_abc', scopes: ['read'] },
     ] as never)
 
     const request = createRequest('http://localhost:3000/api/v1/keys', {
@@ -100,7 +100,7 @@ describe('POST /api/v1/keys', () => {
     ] as never)
     mockSql.mockResolvedValueOnce([] as never) // last_used_at
     mockSql.mockResolvedValueOnce([
-      { id: 'k1', name: 'New Key', key_prefix: 'od_xyz', scopes: ['read', 'write'] },
+      { id: 'k1', name: 'New Key', key_prefix: 'ob_xyz', scopes: ['read', 'write'] },
     ] as never)
     mockSql.mockResolvedValueOnce([] as never) // logAudit
 
@@ -119,7 +119,7 @@ describe('POST /api/v1/keys', () => {
     expect(response.status).toBe(201)
     expect(data.success).toBe(true)
     expect(data.data.key).toBeDefined()
-    expect(data.data.key.startsWith('od_')).toBe(true)
+    expect(data.data.key.startsWith('ob_')).toBe(true)
   })
 })
 
@@ -133,7 +133,7 @@ describe('PUT /api/v1/keys (Bootstrap)', () => {
     mockSql.mockResolvedValueOnce([{ count: 0 }] as never)
     // INSERT
     mockSql.mockResolvedValueOnce([
-      { id: 'k1', name: 'Bootstrap Admin Key', key_prefix: 'od_boot', scopes: ['admin', 'read', 'write'] },
+      { id: 'k1', name: 'Bootstrap Admin Key', key_prefix: 'ob_boot', scopes: ['admin', 'read', 'write'] },
     ] as never)
     // logAudit
     mockSql.mockResolvedValueOnce([] as never)
