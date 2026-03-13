@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { BASE_URL as DEFAULT_BASE_URL } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,7 +9,7 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 function escapeXml(str: string): string {

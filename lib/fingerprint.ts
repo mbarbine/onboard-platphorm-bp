@@ -94,7 +94,7 @@ function extractPlatform(platform: string): string {
 export function generateSessionHash(fingerprint: string, ip: string): string {
   return crypto
     .createHash('sha256')
-    .update(`${fingerprint}:${ip}:${process.env.SESSION_SALT || 'opendocs-salt'}`)
+    .update(`${fingerprint}:${ip}:${process.env.SESSION_SALT || 'platform-salt'}`)
     .digest('hex')
 }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from './db'
 import { APIResponse } from './api-types'
+import { API_KEY_PREFIX, WEBHOOK_SIGNATURE_HEADER, WEBHOOK_EVENT_HEADER } from './site-config'
 import crypto from 'crypto'
 
 export function generateRequestId(): string {
@@ -135,7 +136,7 @@ export function generateSlug(title: string): string {
 }
 
 export function generateApiKey(): { key: string; hash: string; prefix: string } {
-  const key = `od_${crypto.randomBytes(32).toString('hex')}`
+  const key = `${API_KEY_PREFIX}${crypto.randomBytes(32).toString('hex')}`
   const hash = crypto.createHash('sha256').update(key).digest('hex')
   const prefix = key.slice(0, 10)
   return { key, hash, prefix }
@@ -172,8 +173,8 @@ export async function triggerWebhooks(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-OpenDocs-Signature': `sha256=${signature}`,
-          'X-OpenDocs-Event': eventType,
+          [WEBHOOK_SIGNATURE_HEADER]: `sha256=${signature}`,
+          [WEBHOOK_EVENT_HEADER]: eventType,
         },
         body: JSON.stringify(payload),
         signal: deliveryController.signal,

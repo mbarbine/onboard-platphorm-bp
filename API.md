@@ -1,9 +1,9 @@
-# OpenDocs API Reference
+# API Reference
 
 ## Base URL
 
 ```
-Production: https://docs.platphormnews.com/api
+Production: https://onboard.platphormnews.com/api
 Development: http://localhost:3000/api
 ```
 
@@ -12,7 +12,7 @@ Development: http://localhost:3000/api
 Most read operations are public. Write operations require an API key.
 
 ```http
-Authorization: Bearer od_your_api_key_here
+Authorization: Bearer ob_your_api_key_here
 ```
 
 ### Bootstrap API Key
@@ -20,7 +20,7 @@ Authorization: Bearer od_your_api_key_here
 Create the first API key (only works once):
 
 ```bash
-curl -X PUT https://docs.platphormnews.com/api/v1/keys \
+curl -X PUT https://onboard.platphormnews.com/api/v1/keys \
   -H "Content-Type: application/json" \
   -d '{"name": "Admin Key"}'
 ```
@@ -58,7 +58,7 @@ GET /api/v1/documents
       "id": "uuid",
       "slug": "getting-started",
       "title": "Getting Started",
-      "description": "Introduction to OpenDocs",
+      "description": "Introduction to the platform",
       "category": "guides",
       "tags": ["tutorial", "beginner"],
       "emoji_summary": "rocket-sparkles-book",
@@ -84,7 +84,7 @@ GET /api/v1/documents
 
 ```http
 POST /api/v1/documents
-Authorization: Bearer od_xxx
+Authorization: Bearer ob_xxx
 Content-Type: application/json
 ```
 
@@ -114,10 +114,10 @@ Content-Type: application/json
     "slug": "my-document-abc123",
     "title": "My Document",
     "emoji_summary": "page_facing_up-sparkles",
-    "og_title": "My Document | OpenDocs",
+    "og_title": "My Document | Onboard",
     "og_description": "A sample document",
-    "og_image": "https://docs.platphormnews.com/api/og?title=My+Document",
-    "canonical_url": "https://docs.platphormnews.com/docs/my-document-abc123",
+    "og_image": "https://onboard.platphormnews.com/api/og?title=My+Document",
+    "canonical_url": "https://onboard.platphormnews.com/docs/my-document-abc123",
     "reading_time_minutes": 1,
     "word_count": 5,
     "created_at": "2024-01-15T10:00:00Z"
@@ -139,22 +139,22 @@ GET /api/v1/documents/{slug}
     "id": "uuid",
     "slug": "getting-started",
     "title": "Getting Started",
-    "description": "Introduction to OpenDocs",
+    "description": "Introduction to the platform",
     "content": "# Getting Started\n\n...",
     "content_format": "markdown",
     "category": "guides",
     "tags": ["tutorial"],
     "version": 3,
-    "og_title": "Getting Started | OpenDocs",
-    "og_description": "Introduction to OpenDocs",
-    "og_image": "https://docs.platphormnews.com/api/og?title=Getting+Started",
-    "canonical_url": "https://docs.platphormnews.com/docs/getting-started",
+    "og_title": "Getting Started | Onboard",
+    "og_description": "Introduction to the platform",
+    "og_image": "https://onboard.platphormnews.com/api/og?title=Getting+Started",
+    "canonical_url": "https://onboard.platphormnews.com/docs/getting-started",
     "reading_time_minutes": 5,
     "word_count": 1200,
     "emoji_summary": "rocket-sparkles-book",
-    "author_name": "OpenDocs Team",
+    "author_name": "Onboard Team",
     "source_url": null,
-    "source_identifier": "opendocs-core",
+    "source_identifier": "onboard-core",
     "published_at": "2024-01-15T10:00:00Z",
     "created_at": "2024-01-10T09:00:00Z",
     "updated_at": "2024-01-15T10:00:00Z"
@@ -166,7 +166,7 @@ GET /api/v1/documents/{slug}
 
 ```http
 PUT /api/v1/documents/{slug}
-Authorization: Bearer od_xxx
+Authorization: Bearer ob_xxx
 Content-Type: application/json
 ```
 
@@ -174,7 +174,7 @@ Content-Type: application/json
 
 ```http
 DELETE /api/v1/documents/{slug}
-Authorization: Bearer od_xxx
+Authorization: Bearer ob_xxx
 ```
 
 ---
@@ -202,7 +202,7 @@ GET /api/v1/search
       "id": "uuid",
       "slug": "getting-started",
       "title": "Getting Started",
-      "description": "Introduction to OpenDocs",
+      "description": "Introduction to the platform",
       "headline": "...full-text <b>search</b> powered by...",
       "rank": 0.95,
       "category": "guides"
@@ -294,7 +294,7 @@ Content-Type: application/json
 
 ```http
 POST /api/v1/automation
-Authorization: Bearer od_xxx
+Authorization: Bearer ob_xxx
 Content-Type: application/json
 ```
 
@@ -324,7 +324,7 @@ Content-Type: application/json
 
 ```http
 POST /api/v1/webhooks
-Authorization: Bearer od_xxx
+Authorization: Bearer ob_xxx
 Content-Type: application/json
 ```
 

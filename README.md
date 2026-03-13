@@ -1,19 +1,19 @@
-# OpenDocs
+# Onboard
 
-Open-source documentation platform with MCP integration. No auth. No ads. Just docs.
+MCP-enabled documentation platform. No auth. No ads. Just docs.
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/platphormnews/opendocs.git
-cd opendocs
+git clone https://github.com/mbarbine/onboard-platphorm-bp.git
+cd onboard-platphorm-bp
 pnpm install
 cp .env.example .env.local
 # Add your DATABASE_URL (Neon PostgreSQL)
 pnpm dev
 ```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/platphormnews/opendocs)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mbarbine/onboard-platphorm-bp)
 
 ## What It Does
 

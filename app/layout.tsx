@@ -3,34 +3,45 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from '@/components/theme-provider'
+import {
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_TAGLINE,
+  SITE_DESCRIPTION,
+  SITE_GENERATOR,
+  BASE_URL,
+  ORG_URL,
+  ORG_NAME,
+  DEFAULT_KEYWORDS,
+} from '@/lib/site-config'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'),
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: 'OpenDocs - MCP-Enabled Documentation Platform',
-    template: '%s | OpenDocs',
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: 'A modern, AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.',
-  generator: 'OpenDocs',
-  keywords: ['documentation', 'MCP', 'API', 'developer tools', 'knowledge base', 'model context protocol', 'AI documentation', 'open source', 'platphorm news'],
-  authors: [{ name: 'OpenDocs', url: 'https://platphormnews.com' }],
-  creator: 'Platphorm News',
-  publisher: 'Platphorm News',
+  description: SITE_DESCRIPTION,
+  generator: SITE_GENERATOR,
+  keywords: DEFAULT_KEYWORDS,
+  authors: [{ name: SITE_NAME, url: ORG_URL }],
+  creator: ORG_NAME,
+  publisher: ORG_NAME,
   openGraph: {
-    title: 'OpenDocs - MCP-Enabled Documentation Platform',
-    description: 'A modern, AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     type: 'website',
-    siteName: 'OpenDocs',
+    siteName: SITE_NAME,
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'OpenDocs',
-    description: 'MCP-Enabled Documentation Platform',
+    title: SITE_NAME,
+    description: SITE_TAGLINE,
   },
   alternates: {
     types: {

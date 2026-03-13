@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  BASE_URL as DEFAULT_BASE_URL,
+  API_KEY_PREFIX,
+  SERVICE_NAME,
+} from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,19 +15,19 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 export async function GET() {
   const baseUrl = await getBaseUrl()
   
-  const llmsTxt = `# OpenDocs - MCP-Enabled Documentation Platform
+  const llmsTxt = `# ${SITE_NAME} - MCP-Enabled Documentation Platform
 
-> AI-native documentation platform with comprehensive MCP integration, SEO generation, and workflow automation
+> ${SITE_DESCRIPTION}
 
 ## Overview
 
-OpenDocs is a production-ready documentation platform designed for AI agents and humans alike. It provides:
+${SITE_NAME} is a production-ready documentation platform designed for AI agents and humans alike. It provides:
 - **Full MCP Protocol Support** - Tools, resources, prompts for AI agents
 - **Auto-Generated SEO** - OG tags, Twitter cards, JSON-LD structured data
 - **Session Persistence** - JA4+ fingerprinting, draft auto-save
@@ -33,7 +40,7 @@ OpenDocs is a production-ready documentation platform designed for AI agents and
 \`\`\`json
 {
   "mcpServers": {
-    "opendocs": {
+    "${SERVICE_NAME}": {
       "url": "${baseUrl}/api/mcp"
     }
   }
@@ -150,7 +157,7 @@ Every document automatically gets:
 
 Bearer token for protected endpoints:
 \`\`\`
-Authorization: Bearer od_your_api_key
+Authorization: Bearer ${API_KEY_PREFIX}your_api_key
 \`\`\`
 
 Bootstrap first key (only if none exist):
@@ -171,7 +178,7 @@ curl -X PUT ${baseUrl}/api/v1/keys -d '{"name":"Admin"}'
 - Calendar, Kanban integrations available
 
 ---
-OpenDocs v2.0.0 | MCP Protocol 2024-11-05
+${SITE_NAME} v2.0.0 | MCP Protocol 2024-11-05
 `
 
   return new NextResponse(llmsTxt, {

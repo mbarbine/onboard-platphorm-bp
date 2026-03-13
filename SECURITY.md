@@ -9,7 +9,7 @@
 
 ## Reporting a Vulnerability
 
-We take security seriously at OpenDocs. If you discover a security vulnerability,
+We take security seriously. If you discover a security vulnerability,
 please report it responsibly.
 
 ### How to Report
@@ -34,7 +34,7 @@ Include the following in your report:
 ### Scope
 
 In scope:
-- OpenDocs application code
+- Application code
 - API endpoints
 - MCP server implementation
 - Authentication and authorization
@@ -55,7 +55,7 @@ We recognize security researchers who responsibly disclose vulnerabilities:
 
 ### Security Measures
 
-OpenDocs implements:
+The platform implements:
 - Parameterized SQL queries (injection prevention)
 - Content Security Policy headers
 - Rate limiting on API endpoints

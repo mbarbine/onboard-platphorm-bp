@@ -1,8 +1,8 @@
-# OpenDocs Architecture
+# Architecture
 
 ## Overview
 
-OpenDocs is built on a modern, serverless architecture optimized for global scale, AI integration, and accessibility.
+Built on a modern, serverless architecture optimized for global scale, AI integration, and accessibility.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐

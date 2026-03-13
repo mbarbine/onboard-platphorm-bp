@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID, Document } from '@/lib/db'
+import { SITE_NAME, SITE_DESCRIPTION, BASE_URL as DEFAULT_BASE_URL } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +18,7 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 export async function GET() {
@@ -46,13 +47,13 @@ export async function GET() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>OpenDocs</title>
-    <description>AI-native documentation platform with MCP integration</description>
+    <title>${escapeXml(SITE_NAME)}</title>
+    <description>${escapeXml(SITE_DESCRIPTION)}</description>
     <link>${baseUrl}</link>
     <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml"/>
     <language>en-us</language>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
-    <generator>OpenDocs</generator>
+    <generator>${escapeXml(SITE_NAME)}</generator>
 `
 
   for (const doc of documents) {

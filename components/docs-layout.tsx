@@ -28,6 +28,7 @@ import {
 import { useTheme } from 'next-themes'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
 import { AccessibleThemeSwitcher } from '@/components/accessible-theme-switcher'
+import { SITE_NAME, GITHUB_REPO } from '@/lib/site-config'
 
 interface NavItem {
   title: string
@@ -309,7 +310,7 @@ export function DocsLayout({ children, categories }: DocsLayoutProps) {
                 <div className="p-4 border-b">
                   <Link href="/" className="flex items-center gap-2 font-semibold">
                     <Book className="h-5 w-5" />
-                    OpenDocs
+                    {SITE_NAME}
                   </Link>
                 </div>
                 <Sidebar items={defaultNavItems} categories={categories} />
@@ -318,7 +319,7 @@ export function DocsLayout({ children, categories }: DocsLayoutProps) {
 
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Book className="h-5 w-5 text-primary" />
-              <span className="hidden sm:inline">OpenDocs</span>
+              <span className="hidden sm:inline">{SITE_NAME}</span>
             </Link>
           </div>
 
@@ -334,7 +335,7 @@ export function DocsLayout({ children, categories }: DocsLayoutProps) {
             </Link>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="https://github.com/platphormnews/opendocs" target="_blank" rel="noopener">
+                <Link href={GITHUB_REPO} target="_blank" rel="noopener">
                   <Button variant="ghost" size="icon">
                     <Github className="h-5 w-5" />
                     <span className="sr-only">Clone on GitHub</span>

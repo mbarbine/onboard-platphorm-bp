@@ -1,6 +1,6 @@
 # Local / Self-Hosted Development
 
-Run the full OpenDocs stack locally with Docker — no Vercel account required.
+Run the full stack locally with Docker — no Vercel account required.
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ docker compose up --build -d
 ## Environment Variables
 
 All defaults work out of the box. The default database credentials
-(`opendocs`/`opendocs`) are for **local development only** — change them before
+(`platform`/`platform`) are for **local development only** — change them before
 exposing any ports to an untrusted network.
 
 Override any variable by creating a `.env` file in the project root (Docker
@@ -39,7 +39,7 @@ Compose loads it automatically):
 
 ```dotenv
 # Already set by docker-compose.yml — override only if needed
-DATABASE_URL=postgresql://opendocs:opendocs@db:5432/opendocs
+DATABASE_URL=postgresql://platform:platform@db:5432/platform
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
@@ -50,10 +50,10 @@ integrations, etc.).
 
 ```bash
 # Via Docker
-docker compose exec db psql -U opendocs
+docker compose exec db psql -U platform
 
 # Or from your host (requires psql client)
-psql postgresql://opendocs:opendocs@localhost:5432/opendocs
+psql postgresql://platform:platform@localhost:5432/platform
 ```
 
 ## Developing Without Docker
@@ -65,7 +65,7 @@ If you prefer running Next.js on your host machine and only want the database:
 docker compose up db -d
 
 # Point your local app at the container
-echo 'DATABASE_URL=postgresql://opendocs:opendocs@localhost:5432/opendocs' >> .env.local
+echo 'DATABASE_URL=postgresql://platform:platform@localhost:5432/platform' >> .env.local
 
 npm install
 npm run dev

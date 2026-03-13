@@ -6,6 +6,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  BASE_URL,
+  ORG_URL,
+  ORG_NAME,
+  GITHUB_REPO as DEFAULT_GITHUB_REPO,
+  GITHUB_ORG,
+  CONTACT_EMAIL,
+} from '@/lib/site-config'
+import {
   Book,
   Code,
   Zap,
@@ -84,18 +95,18 @@ async function getSettings() {
     return result
   } catch {
     return {
-      github_repo: 'https://github.com/platphormnews/opendocs',
-      base_url: 'https://docs.platphormnews.com',
+      github_repo: DEFAULT_GITHUB_REPO,
+      base_url: BASE_URL,
     }
   }
 }
 
 export const metadata: Metadata = {
-  title: 'OpenDocs - AI-Native Documentation Platform',
-  description: 'A modern documentation hub with full MCP integration. Connect AI agents, submit content from any source, and discover knowledge through natural language search.',
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   openGraph: {
-    title: 'OpenDocs - AI-Native Documentation Platform',
-    description: 'A modern documentation hub with full MCP integration. Connect AI agents, submit content from any source, and discover knowledge through natural language search.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     type: 'website',
   },
 }
@@ -108,16 +119,16 @@ export default async function HomePage() {
     getSettings(),
   ])
   
-  const githubRepo = settings.github_repo || 'https://github.com/platphormnews/opendocs'
-  const baseUrl = settings.base_url || 'https://docs.platphormnews.com'
+  const githubRepo = settings.github_repo || DEFAULT_GITHUB_REPO
+  const baseUrl = settings.base_url || BASE_URL
 
   // JSON-LD structured data for homepage
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'OpenDocs',
+    name: SITE_NAME,
     url: baseUrl,
-    description: 'AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.',
+    description: SITE_DESCRIPTION,
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -128,8 +139,8 @@ export default async function HomePage() {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Platphorm News',
-      url: 'https://platphormnews.com',
+      name: ORG_NAME,
+      url: ORG_URL,
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/icon-512.png`,
@@ -140,16 +151,16 @@ export default async function HomePage() {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Platphorm News',
-    url: 'https://platphormnews.com',
+    name: ORG_NAME,
+    url: ORG_URL,
     logo: `${baseUrl}/icon-512.png`,
     sameAs: [
-      'https://github.com/platphormnews',
+      GITHUB_ORG,
       githubRepo,
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      email: 'hello@platphormnews.com',
+      email: CONTACT_EMAIL,
       contactType: 'customer support',
     },
   }

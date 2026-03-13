@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
+import { STORAGE_PREFIX } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 import { Sun, Moon, Monitor, Palette, Check, X, Eye } from 'lucide-react'
 
@@ -78,8 +79,8 @@ export function AccessibleThemeSwitcher({ locale = 'en' }: AccessibleThemeSwitch
     // eslint-disable-next-line react-hooks/set-state-in-effect -- standard Next.js hydration guard
     setMounted(true)
     // Load saved preferences
-    const savedAccent = localStorage.getItem('opendocs-accent')
-    const savedHighContrast = localStorage.getItem('opendocs-high-contrast')
+    const savedAccent = localStorage.getItem(`${STORAGE_PREFIX}-accent`)
+    const savedHighContrast = localStorage.getItem(`${STORAGE_PREFIX}-high-contrast`)
     if (savedAccent) setSelectedAccent(savedAccent)
     if (savedHighContrast) setHighContrastMode(savedHighContrast)
   }, [])
@@ -91,7 +92,7 @@ export function AccessibleThemeSwitcher({ locale = 'en' }: AccessibleThemeSwitch
     if (accent) {
       document.documentElement.style.setProperty('--accent-hue', accent.hue.toString())
     }
-    localStorage.setItem('opendocs-accent', selectedAccent)
+    localStorage.setItem(`${STORAGE_PREFIX}-accent`, selectedAccent)
   }, [selectedAccent, mounted])
 
   // Apply high contrast mode
@@ -99,10 +100,10 @@ export function AccessibleThemeSwitcher({ locale = 'en' }: AccessibleThemeSwitch
     if (!mounted) return
     if (highContrastMode) {
       document.documentElement.setAttribute('data-high-contrast', highContrastMode)
-      localStorage.setItem('opendocs-high-contrast', highContrastMode)
+      localStorage.setItem(`${STORAGE_PREFIX}-high-contrast`, highContrastMode)
     } else {
       document.documentElement.removeAttribute('data-high-contrast')
-      localStorage.removeItem('opendocs-high-contrast')
+      localStorage.removeItem(`${STORAGE_PREFIX}-high-contrast`)
     }
   }, [highContrastMode, mounted])
 

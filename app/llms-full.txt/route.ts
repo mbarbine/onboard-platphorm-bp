@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { SITE_NAME, BASE_URL as DEFAULT_BASE_URL, API_KEY_PREFIX } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,7 +9,7 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 export async function GET() {
@@ -34,7 +35,7 @@ export async function GET() {
     console.error('Error fetching documents for llms-full.txt:', error)
   }
 
-  let content = `# OpenDocs - Full Documentation Index for LLMs
+  let content = `# ${SITE_NAME} - Full Documentation Index for LLMs
 
 > AI-native documentation platform with MCP integration
 > This file contains complete documentation for AI consumption
@@ -111,7 +112,7 @@ ${doc.content.slice(0, 3000)}${doc.content.length > 3000 ? '\n... [truncated - f
 
 ### Authentication
 Bearer token authentication for write operations:
-\`Authorization: Bearer od_your_api_key_here\`
+`Authorization: Bearer ${API_KEY_PREFIX}your_api_key_here`
 
 Read operations are public.
 

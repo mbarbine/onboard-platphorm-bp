@@ -1,7 +1,7 @@
 {
-  "name": "OpenDocs - AI-Native Documentation Platform",
-  "short_name": "OpenDocs",
-  "description": "AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.",
+  "name": "Onboard — MCP-Enabled Documentation Platform",
+  "short_name": "Onboard",
+  "description": "A modern, AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

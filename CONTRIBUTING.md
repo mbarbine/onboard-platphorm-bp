@@ -1,6 +1,6 @@
-# Contributing to OpenDocs
+# Contributing
 
-First off, thank you for considering contributing to OpenDocs! It's people like you that make OpenDocs such a great tool for the community.
+First off, thank you for considering contributing! It's people like you that make this project such a great tool for the community.
 
 ## Code of Conduct
 
@@ -39,8 +39,8 @@ Feature suggestions are tracked as GitHub issues. When suggesting a feature:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/opendocs.git
-cd opendocs
+git clone https://github.com/YOUR_USERNAME/onboard-platphorm-bp.git
+cd onboard-platphorm-bp
 
 # Install dependencies
 pnpm install
@@ -143,7 +143,7 @@ Contributors are recognized in:
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/platphormnews/opendocs/discussions)
+- Open a [Discussion](https://github.com/mbarbine/onboard-platphorm-bp/discussions)
 - Join our [Discord](https://discord.gg/platphormnews)
 - Email: opensource@platphormnews.com
 

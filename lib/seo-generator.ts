@@ -1,4 +1,5 @@
 import { sql, DEFAULT_TENANT_ID } from './db'
+import { SITE_NAME, ORG_NAME } from './site-config'
 
 // Types for SEO generation
 export interface SEOMetadata {
@@ -245,11 +246,11 @@ export function generateStructuredData(
       name: doc.authorName,
     } : {
       '@type': 'Organization',
-      name: 'OpenDocs',
+      name: SITE_NAME,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'OpenDocs',
+      name: ORG_NAME,
       url: baseUrl,
     },
     mainEntityOfPage: {
@@ -527,7 +528,7 @@ export function generateGEOMetadata(doc: DocumentMeta): GEOMetadata {
   const summary = description.slice(0, 300)
   const keyFacts = extractKeyFacts(doc.content)
   const keywords = extractKeywords(doc.title, doc.content, doc.tags)
-  const citationLabel = `${doc.title} — OpenDocs`
+  const citationLabel = `${doc.title} — ${SITE_NAME}`
 
   return {
     summary,

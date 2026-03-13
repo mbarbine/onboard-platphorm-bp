@@ -1,5 +1,5 @@
 /**
- * OpenDocs Version Information
+ * Version Information
  * 
  * Exports build-time version data for runtime access.
  */

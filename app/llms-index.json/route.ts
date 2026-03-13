@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import {
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  BASE_URL as DEFAULT_BASE_URL,
+  API_KEY_PREFIX,
+  WEBHOOK_SIGNATURE_HEADER,
+} from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,7 +15,7 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 export async function GET() {
@@ -38,8 +45,8 @@ export async function GET() {
   }
 
   const index = {
-    name: 'OpenDocs',
-    description: 'AI-native documentation platform with MCP integration',
+    name: SITE_NAME,
+    description: SITE_DESCRIPTION,
     version: '1.0.0',
     generated_at: new Date().toISOString(),
     base_url: baseUrl,
@@ -115,7 +122,7 @@ export async function GET() {
     authentication: {
       type: 'bearer',
       header: 'Authorization',
-      format: 'Bearer od_your_api_key_here',
+      format: `Bearer ${API_KEY_PREFIX}your_api_key_here`,
       scopes: ['read', 'write', 'admin'],
       bootstrap_endpoint: `${baseUrl}/api/v1/keys`,
     },
@@ -129,7 +136,7 @@ export async function GET() {
         'submission.approved',
         'submission.rejected',
       ],
-      signature_header: 'X-OpenDocs-Signature',
+      signature_header: WEBHOOK_SIGNATURE_HEADER,
       signature_format: 'sha256={hmac}',
     },
   }

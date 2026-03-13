@@ -1,5 +1,5 @@
 /**
- * OpenDocs Structured Logger
+ * Structured Logger
  * 
  * Provides consistent, structured logging with Vercel Log Drain compatibility.
  * Follows OpenTelemetry semantic conventions where applicable.
@@ -7,6 +7,8 @@
  * @see https://vercel.com/docs/observability/log-drains
  * @see https://opentelemetry.io/docs/specs/semconv/
  */
+
+import { SERVICE_NAME } from './site-config'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
@@ -67,7 +69,7 @@ class Logger {
   private minLevel: LogLevel
   
   constructor() {
-    this.service = 'opendocs'
+    this.service = SERVICE_NAME
     this.version = process.env.npm_package_version || '1.0.0'
     this.environment = process.env.NODE_ENV || 'development'
     this.minLevel = (process.env.LOG_LEVEL as LogLevel) || 'info'

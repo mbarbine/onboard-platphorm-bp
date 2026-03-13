@@ -1,6 +1,6 @@
 # PACKAGES
 
-> Ecosystem reference for the Platphorm News / OpenDocs stack.  
+> Ecosystem reference for the Platphorm News Network stack.  
 > Use this as a baseline when bootstrapping new projects in the ecosystem.  
 > All version pins here reflect the live state of this repo; check `package.json`
 > for the canonical source of truth before copying ranges.

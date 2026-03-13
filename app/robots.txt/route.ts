@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
+import { SITE_NAME, BASE_URL as DEFAULT_BASE_URL, ORG_URL } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,13 +9,13 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  return DEFAULT_BASE_URL
 }
 
 export async function GET() {
   const baseUrl = await getBaseUrl()
   
-  const robotsTxt = `# OpenDocs - Documentation platform with MCP integration
+  const robotsTxt = `# ${SITE_NAME} - Documentation platform with MCP integration
 # ${baseUrl}
 
 User-agent: *
@@ -49,7 +50,7 @@ Allow: /.well-known/
 
 # RSS Feed: ${baseUrl}/rss.xml
 # Humans: ${baseUrl}/humans.txt
-# Ecosystem: https://platphormnews.com
+# Ecosystem: ${ORG_URL}
 `
 
   return new NextResponse(robotsTxt, {

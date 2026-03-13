@@ -3,16 +3,16 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: opendocs
-      POSTGRES_PASSWORD: opendocs
-      POSTGRES_DB: opendocs
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: platform
+      POSTGRES_DB: platform
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./scripts/001-init-schema.sql:/docker-entrypoint-initdb.d/001-init-schema.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U opendocs"]
+      test: ["CMD-SHELL", "pg_isready -U platform"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://opendocs:opendocs@db:5432/opendocs
+      DATABASE_URL: postgresql://platform:platform@db:5432/platform
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
     depends_on:
       db:
