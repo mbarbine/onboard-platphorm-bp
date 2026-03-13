@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SITE_NAME, SITE_DESCRIPTION, SERVICE_NAME } from '@/lib/site-config'
 
 /**
  * MCP Registry Registration Endpoint
@@ -16,8 +17,8 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     // MCP Server Metadata
-    name: 'OpenDocs',
-    description: 'AI-native documentation platform with full MCP integration. Create, search, and manage documentation via MCP tools and resources.',
+    name: SITE_NAME,
+    description: SITE_DESCRIPTION,
     version: '1.0.0',
     
     // MCP Endpoint
@@ -174,7 +175,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Registration acknowledged',
       server: {
-        name: 'OpenDocs',
+        name: SITE_NAME,
         mcp_endpoint: `${serverUrl}/api/mcp`,
         version: '1.0.0'
       },

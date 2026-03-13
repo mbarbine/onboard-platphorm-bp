@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
+import { SITE_NAME, SITE_DESCRIPTION, ORG_NAME, ORG_URL, CONTACT_EMAIL, SUPPORT_EMAIL, SECURITY_EMAIL, GITHUB_REPO } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,18 +17,18 @@ export async function GET() {
 
   const agentJson = {
     schema_version: '1.0.0',
-    name: 'OpenDocs',
-    description: 'AI-native documentation platform with full MCP integration. Submit, discover, and explore documentation from any source.',
+    name: SITE_NAME,
+    description: SITE_DESCRIPTION,
     url: baseUrl,
     provider: {
-      organization: 'Platphorm News',
-      url: 'https://platphormnews.com',
+      organization: ORG_NAME,
+      url: ORG_URL,
     },
     logo: `${baseUrl}/icon-512.png`,
     contacts: {
-      email: 'hello@platphormnews.com',
-      support: 'support@platphormnews.com',
-      security: 'security@platphormnews.com',
+      email: CONTACT_EMAIL,
+      support: SUPPORT_EMAIL,
+      security: SECURITY_EMAIL,
     },
     capabilities: {
       mcp: {
@@ -83,9 +84,9 @@ export async function GET() {
       authenticated: '1000 requests per minute',
     },
     ecosystem: {
-      parent: 'https://platphormnews.com',
+      parent: ORG_URL,
       documentation: `${baseUrl}`,
-      github: 'https://github.com/platphormnews/opendocs',
+      github: GITHUB_REPO,
     },
   }
 

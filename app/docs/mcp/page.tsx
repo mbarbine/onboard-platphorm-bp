@@ -5,9 +5,11 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Zap, Wrench, Database, MessageSquare } from 'lucide-react'
 
+import { SITE_NAME } from '@/lib/site-config'
+
 export const metadata = {
   title: 'MCP Integration',
-  description: 'Model Context Protocol integration guide for OpenDocs. Connect AI agents like Claude, GPT, and other MCP-compatible tools to your documentation.',
+  description: `Model Context Protocol integration guide for ${SITE_NAME}. Connect AI agents like Claude, GPT, and other MCP-compatible tools to your documentation.`,
 }
 
 async function getCategories(): Promise<(Category & { document_count: number })[]> {
@@ -123,7 +125,7 @@ export default async function MCPDocsPage() {
           <h1 className="text-3xl font-bold tracking-tight">MCP Integration</h1>
         </div>
         <p className="text-lg text-muted-foreground text-pretty">
-          Connect AI agents to OpenDocs using the Model Context Protocol (MCP).
+          Connect AI agents to {SITE_NAME} using the Model Context Protocol (MCP).
           Full support for tools, resources, and prompts.
         </p>
       </div>

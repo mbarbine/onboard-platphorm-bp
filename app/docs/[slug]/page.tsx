@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
 import { extractFAQFromContent } from '@/lib/seo-generator'
+import { SITE_NAME, ORG_NAME } from '@/lib/site-config'
 import { DocsLayout } from '@/components/docs-layout'
 import { MarkdownRenderer } from '@/components/markdown-renderer'
 import { Badge } from '@/components/ui/badge'
@@ -96,7 +97,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const canonicalUrl = doc.canonical_url || `${baseUrl}/docs/${slug}`
   const ogImage = doc.og_image || `${baseUrl}/api/og?title=${encodeURIComponent(doc.title)}&emoji=${encodeURIComponent(doc.emoji_summary || '📄')}&category=${encodeURIComponent(doc.category || '')}`
-  const description = doc.og_description || doc.description || `Read ${doc.title} on OpenDocs`
+  const description = doc.og_description || doc.description || `Read ${doc.title} on ${SITE_NAME}`
 
   return {
     title: doc.og_title || doc.title,
@@ -119,7 +120,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
       ],
       url: canonicalUrl,
-      siteName: 'OpenDocs',
+      siteName: SITE_NAME,
       locale: 'en_US',
     },
     twitter: {
@@ -181,11 +182,11 @@ export default async function DocumentPage({ params }: PageProps) {
       url: doc.author_url,
     } : {
       '@type': 'Organization',
-      name: 'OpenDocs',
+      name: SITE_NAME,
     },
     publisher: {
       '@type': 'Organization',
-      name: 'OpenDocs',
+      name: SITE_NAME,
       url: baseUrl,
       logo: {
         '@type': 'ImageObject',

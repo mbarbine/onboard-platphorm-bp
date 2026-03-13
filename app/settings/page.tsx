@@ -33,6 +33,7 @@ import {
   Copy
 } from 'lucide-react'
 import { locales, localeNames, type Locale } from '@/lib/i18n'
+import { SITE_NAME, GITHUB_REPO } from '@/lib/site-config'
 
 interface Integration {
   id: string
@@ -201,7 +202,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-2 font-semibold">
                 <Globe className="h-5 w-5 text-primary" />
-                <span>{settings?.site_name || 'OpenDocs'}</span>
+                <span>{settings?.site_name || SITE_NAME}</span>
               </Link>
               <Badge variant="secondary">Settings</Badge>
             </div>
@@ -242,7 +243,7 @@ export default function SettingsPage() {
               Settings
             </h1>
             <p className="mt-2 text-muted-foreground">
-              Configure your OpenDocs instance. Clone and redeploy to Vercel with your own integrations.
+              Configure your {SITE_NAME} instance. Clone and redeploy to Vercel with your own integrations.
             </p>
           </div>
           
@@ -265,13 +266,13 @@ export default function SettingsPage() {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" asChild>
-                  <a href={settings?.github_repo || 'https://github.com/platphormnews/opendocs'} target="_blank" rel="noopener noreferrer">
+                  <a href={settings?.github_repo || GITHUB_REPO} target="_blank" rel="noopener noreferrer">
                     <Github className="mr-2 h-4 w-4" />
                     Clone Repository
                   </a>
                 </Button>
                 <Button size="sm" asChild>
-                  <a href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent(settings?.github_repo || 'https://github.com/platphormnews/opendocs')}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent(settings?.github_repo || GITHUB_REPO)}`} target="_blank" rel="noopener noreferrer">
                     Deploy to Vercel
                     <ExternalLink className="ml-2 h-4 w-4" />
                   </a>
@@ -303,7 +304,7 @@ export default function SettingsPage() {
                         id="site_name"
                         value={settings?.site_name || ''}
                         onChange={(e) => updateSetting('site_name', e.target.value)}
-                        placeholder="OpenDocs"
+                        placeholder={SITE_NAME}
                       />
                     </div>
                     
@@ -333,7 +334,7 @@ export default function SettingsPage() {
                         id="github_repo"
                         value={settings?.github_repo || ''}
                         onChange={(e) => updateSetting('github_repo', e.target.value)}
-                        placeholder="https://github.com/platphormnews/opendocs"
+                        placeholder={GITHUB_REPO}
                       />
                     </div>
                     

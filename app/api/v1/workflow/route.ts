@@ -171,7 +171,7 @@ async function executeContentPipeline(input: Record<string, unknown>, baseUrl: s
 
   // 1. Fetch content
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'OpenDocs-Workflow/1.0' },
+    headers: { 'User-Agent': `${SITE_NAME}-Workflow/1.0` },
   })
   
   if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`)

@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
+import { SITE_NAME, BASE_URL } from '@/lib/site-config'
 
 export function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://docs.platphormnews.com'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || BASE_URL
   
   const openApiSpec = {
     openapi: '3.1.0',
     info: {
-      title: 'OpenDocs API',
+      title: `${SITE_NAME} API`,
       version: '1.0.0',
       description: 'AI-native documentation platform with MCP integration',
       contact: {
-        name: 'OpenDocs',
+        name: SITE_NAME,
         url: baseUrl,
       },
     },

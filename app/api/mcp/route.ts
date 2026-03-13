@@ -10,6 +10,7 @@ import { generateSimpleSlug } from '@/lib/auto-name'
 import crypto from 'crypto'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { SITE_NAME, SERVICE_NAME, BASE_URL, SITE_TAGLINE } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -113,7 +114,7 @@ async function ensureCategoryExists(categorySlug: string | null | undefined): Pr
 // Server factory — creates a fresh McpServer per request (stateless serverless)
 // ─────────────────────────────────────────────────────────────────────────────
 export function createMcpServer(): McpServer {
-  const server = new McpServer({ name: 'opendocs-mcp', version: '2.0.0' })
+  const server = new McpServer({ name: `${SERVICE_NAME}-mcp`, version: '2.0.0' })
 
   // ── Document tools ──────────────────────────────────────────────────────────
 
@@ -469,7 +470,7 @@ export function createMcpServer(): McpServer {
       const docCategory = await ensureCategoryExists(category)
       const response = await fetchWithTimeout(url, {
         headers: {
-          'User-Agent': 'OpenDocs/1.0 (+https://docs.platphormnews.com)',
+          'User-Agent': `${SITE_NAME}/1.0 (+${BASE_URL})`,
           'Accept': 'text/html,application/xhtml+xml,text/markdown,text/plain,application/json',
         },
         redirect: 'follow',
@@ -955,7 +956,7 @@ export function createMcpServer(): McpServer {
       ORDER BY category, title
     ` as Document[]
     const text = [
-      '# OpenDocs - MCP-Enabled Documentation Platform',
+      `# ${SITE_NAME} - ${SITE_TAGLINE}`,
       '',
       `Base URL: ${baseUrl}`,
       `MCP Endpoint: ${baseUrl}/api/mcp`,
@@ -1066,7 +1067,7 @@ export async function POST(req: Request): Promise<Response> {
 export async function GET(): Promise<NextResponse> {
   const baseUrl = await getBaseUrl()
   return NextResponse.json({
-    name: 'opendocs-mcp',
+    name: `${SERVICE_NAME}-mcp`,
     version: '2.0.0',
     protocol_version: '2024-11-05',
     endpoint: `${baseUrl}/api/mcp`,

@@ -7,13 +7,15 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, FileText } from 'lucide-react'
 
+import { SITE_NAME } from '@/lib/site-config'
+
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>
 }
 
 export const metadata = {
   title: 'Search',
-  description: 'Search across all OpenDocs documentation. Find guides, API references, tutorials, and community-contributed content using full-text search.',
+  description: `Search across all ${SITE_NAME} documentation. Find guides, API references, tutorials, and community-contributed content using full-text search.`,
 }
 
 async function getCategories(): Promise<(Category & { document_count: number })[]> {

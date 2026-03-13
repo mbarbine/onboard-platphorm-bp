@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import crypto from 'crypto'
+import { SITE_NAME, BASE_URL, GITHUB_REPO } from '@/lib/site-config'
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001'
 
@@ -10,8 +11,8 @@ const DEFAULTS: Record<string, string> = {
   admin_password_hash: '""',
   base_url: '"https://docs.platphormnews.com"',
   default_locale: '"en"',
-  site_name: '"OpenDocs"',
-  github_repo: '"https://github.com/platphormnews/opendocs"',
+  site_name: JSON.stringify(SITE_NAME),
+  github_repo: JSON.stringify(GITHUB_REPO),
 }
 
 function hashPassword(password: string): string {

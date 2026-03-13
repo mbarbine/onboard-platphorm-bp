@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
+import { SITE_NAME, SECURITY_EMAIL, ORG_URL } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,15 +15,15 @@ async function getBaseUrl(): Promise<string> {
 export async function GET() {
   const baseUrl = await getBaseUrl()
 
-  const securityTxt = `# OpenDocs Security Policy
+  const securityTxt = `# ${SITE_NAME} Security Policy
 # https://securitytxt.org/
 
-Contact: mailto:security@platphormnews.com
+Contact: mailto:${SECURITY_EMAIL}
 Expires: 2027-12-31T23:59:59.000Z
 Preferred-Languages: en
 Canonical: ${baseUrl}/.well-known/security.txt
 Policy: ${baseUrl}/docs/security
-Hiring: https://platphormnews.com/careers
+Hiring: ${ORG_URL}/careers
 `
 
   return new NextResponse(securityTxt, {

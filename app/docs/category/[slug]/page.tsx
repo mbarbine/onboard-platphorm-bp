@@ -6,6 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, Calendar, User, FileText } from 'lucide-react'
+import { SITE_NAME } from '@/lib/site-config'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -66,7 +67,7 @@ export async function generateMetadata({ params }: PageProps) {
 
   return {
     title: category.name,
-    description: category.description || `Browse all documentation pages in the ${category.name} category on OpenDocs.`,
+    description: category.description || `Browse all documentation pages in the ${category.name} category on ${SITE_NAME}.`,
   }
 }
 

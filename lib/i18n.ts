@@ -1,4 +1,4 @@
-export type Locale = 'en' | 'es' | 'fr' | 'de' | 'ja' | 'zh' | 'pt' | 'ar' | 'ru' | 'ko'
+import { SITE_NAME } from './site-config'\n\nexport type Locale = 'en' | 'es' | 'fr' | 'de' | 'ja' | 'zh' | 'pt' | 'ar' | 'ru' | 'ko'
 
 export const locales: Locale[] = ['en', 'es', 'fr', 'de', 'ja', 'zh', 'pt', 'ar', 'ru', 'ko']
 
@@ -201,7 +201,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'results found',
     
     'settings.title': 'Settings',
-    'settings.description': 'Configure your OpenDocs instance',
+    'settings.description': `Configure your ${SITE_NAME} instance`,
     'settings.general': 'General',
     'settings.integrations': 'Integrations',
     'settings.auto_approve': 'Auto-Approve Submissions',
@@ -310,7 +310,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'resultados encontrados',
     
     'settings.title': 'Configuración',
-    'settings.description': 'Configura tu instancia de OpenDocs',
+    'settings.description': `Configura tu instancia de ${SITE_NAME}`,
     'settings.general': 'General',
     'settings.integrations': 'Integraciones',
     'settings.auto_approve': 'Auto-Aprobar Envíos',
@@ -419,7 +419,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'résultats trouvés',
     
     'settings.title': 'Paramètres',
-    'settings.description': 'Configurez votre instance OpenDocs',
+    'settings.description': `Configurez votre instance ${SITE_NAME}`,
     'settings.general': 'Général',
     'settings.integrations': 'Intégrations',
     'settings.auto_approve': 'Auto-Approbation',
@@ -528,7 +528,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'Ergebnisse gefunden',
     
     'settings.title': 'Einstellungen',
-    'settings.description': 'Konfigurieren Sie Ihre OpenDocs-Instanz',
+    'settings.description': `Konfigurieren Sie Ihre ${SITE_NAME}-Instanz`,
     'settings.general': 'Allgemein',
     'settings.integrations': 'Integrationen',
     'settings.auto_approve': 'Auto-Genehmigung',
@@ -637,7 +637,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': '件の結果',
     
     'settings.title': '設定',
-    'settings.description': 'OpenDocsインスタンスを設定',
+    'settings.description': `${SITE_NAME}インスタンスを設定`,
     'settings.general': '一般',
     'settings.integrations': '統合',
     'settings.auto_approve': '自動承認',
@@ -746,7 +746,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': '个结果',
     
     'settings.title': '设置',
-    'settings.description': '配置您的OpenDocs实例',
+    'settings.description': `配置您的${SITE_NAME}实例`,
     'settings.general': '常规',
     'settings.integrations': '集成',
     'settings.auto_approve': '自动批准提交',
@@ -855,7 +855,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'resultados encontrados',
     
     'settings.title': 'Configurações',
-    'settings.description': 'Configure sua instância OpenDocs',
+    'settings.description': `Configure sua instância ${SITE_NAME}`,
     'settings.general': 'Geral',
     'settings.integrations': 'Integrações',
     'settings.auto_approve': 'Auto-Aprovar Envios',
@@ -964,7 +964,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'نتيجة',
     
     'settings.title': 'الإعدادات',
-    'settings.description': 'تكوين نسختك من OpenDocs',
+    'settings.description': `تكوين نسختك من ${SITE_NAME}`,
     'settings.general': 'عام',
     'settings.integrations': 'التكاملات',
     'settings.auto_approve': 'الموافقة التلقائية',
@@ -1073,7 +1073,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': 'результатов',
     
     'settings.title': 'Настройки',
-    'settings.description': 'Настройте ваш экземпляр OpenDocs',
+    'settings.description': `Настройте ваш экземпляр ${SITE_NAME}`,
     'settings.general': 'Общие',
     'settings.integrations': 'Интеграции',
     'settings.auto_approve': 'Автоматическое одобрение',
@@ -1182,7 +1182,7 @@ const translations: Record<Locale, TranslationKeys> = {
     'search.results_count': '개의 결과',
     
     'settings.title': '설정',
-    'settings.description': 'OpenDocs 인스턴스 구성',
+    'settings.description': `${SITE_NAME} 인스턴스 구성`,
     'settings.general': '일반',
     'settings.integrations': '통합',
     'settings.auto_approve': '자동 승인',

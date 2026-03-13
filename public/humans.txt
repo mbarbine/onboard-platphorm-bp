@@ -6,7 +6,7 @@ GitHub: @michaelbarbine
 
 /* SITE */
 
-Project: OpenDocs
+Project: Onboard
 Description: Open-source documentation platform with MCP integration
 Standards: HTML5, CSS3, TypeScript, JSON-RPC 2.0, MCP
 Components: Next.js, React, Tailwind CSS, PostgreSQL
@@ -98,7 +98,7 @@ MCP:          https://docs.platphormnews.com/api/mcp
 
 /* ECOSYSTEM */
 
-OpenDocs is one of 98 projects in the Platphorm News ecosystem.
+Onboard is part of the Platphorm News Network.
 Shared standards, shared infrastructure, shared mission.
 
 See: https://docs.platphormnews.com/ecosystem

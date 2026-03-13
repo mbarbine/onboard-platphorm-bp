@@ -6,9 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Copy } from 'lucide-react'
 import { ApiCodeBlock } from './api-code-block'
 
+import { SITE_NAME } from '@/lib/site-config'
+
 export const metadata = {
   title: 'API Reference',
-  description: 'Complete REST API documentation for OpenDocs. Explore endpoints, authentication, request/response formats, and code examples for programmatic access.',
+  description: `Complete REST API documentation for ${SITE_NAME}. Explore endpoints, authentication, request/response formats, and code examples for programmatic access.`,
 }
 
 async function getCategories(): Promise<(Category & { document_count: number })[]> {
@@ -191,7 +193,7 @@ export default async function APIDocsPage() {
       <div className="space-y-2 mb-8">
         <h1 className="text-3xl font-bold tracking-tight">API Reference</h1>
         <p className="text-lg text-muted-foreground text-pretty">
-          Complete REST API documentation for programmatic access to OpenDocs.
+          Complete REST API documentation for programmatic access to {SITE_NAME}.
         </p>
       </div>
 

@@ -187,7 +187,7 @@ async function handleWorkflowIngest(params: { urls: string[], category?: string,
     try {
       // Fetch the URL
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'OpenDocs-Bot/1.0' },
+        headers: { 'User-Agent': `${SITE_NAME}-Bot/1.0` },
       })
       
       if (!response.ok) {

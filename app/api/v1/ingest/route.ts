@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
     try {
       fetchResponse = await fetch(url, {
         headers: {
-          'User-Agent': 'OpenDocs Ingestion Bot/1.0',
+          'User-Agent': `${SITE_NAME} Ingestion Bot/1.0`,
           'Accept': 'text/html,application/xhtml+xml,text/markdown,text/plain,application/json'
         },
         redirect: 'follow',

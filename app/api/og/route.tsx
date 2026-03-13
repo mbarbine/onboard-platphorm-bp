@@ -3,10 +3,16 @@ import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
 
+const SITE_LABEL = process.env.NEXT_PUBLIC_SITE_NAME || 'Onboard'
+const SITE_TAG = process.env.NEXT_PUBLIC_SITE_TAGLINE || 'MCP-Enabled Documentation Platform'
+const SITE_DOMAIN = (() => {
+  try { return new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').host } catch { return 'localhost:3000' }
+})()
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const title = searchParams.get('title') || 'OpenDocs'
-  const description = searchParams.get('description') || 'MCP-Enabled Documentation Platform'
+  const title = searchParams.get('title') || SITE_LABEL
+  const description = searchParams.get('description') || SITE_TAG
   const emoji = searchParams.get('emoji') || '📄'
   const category = searchParams.get('category') || ''
 
@@ -107,7 +113,7 @@ export async function GET(request: NextRequest) {
               <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
             </svg>
             <span style={{ fontSize: '24px', color: '#fafafa', fontWeight: 600 }}>
-              OpenDocs
+              {SITE_LABEL}
             </span>
           </div>
           <div
@@ -116,7 +122,7 @@ export async function GET(request: NextRequest) {
               color: '#71717a',
             }}
           >
-            docs.platphormnews.com
+            {SITE_DOMAIN}
           </div>
         </div>
       </div>
