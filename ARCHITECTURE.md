@@ -1,0 +1,174 @@
+# OpenDocs Architecture
+
+## Overview
+
+OpenDocs is built on a modern, serverless architecture optimized for global scale, AI integration, and accessibility.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                              CLIENTS                                     │
+├─────────────────┬─────────────────┬─────────────────┬───────────────────┤
+│   Web Browser   │   AI Agents     │   Automation    │   External APIs   │
+│   (Next.js UI)  │   (MCP/JSON-RPC)│   (Webhooks)    │   (REST v1)       │
+└────────┬────────┴────────┬────────┴────────┬────────┴─────────┬─────────┘
+         │                 │                 │                   │
+         └─────────────────┴─────────────────┴───────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         VERCEL EDGE NETWORK                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
+│  │   CDN       │  │  Edge       │  │  Serverless │  │  Image      │    │
+│  │   Cache     │  │  Functions  │  │  Functions  │  │  Optimize   │    │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         APPLICATION LAYER                                │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │                        Next.js 16 App Router                      │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │   │
+│  │  │   Pages    │  │    API     │  │    MCP     │  │  Discovery │  │   │
+│  │  │   (RSC)    │  │   Routes   │  │   Server   │  │   Files    │  │   │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │                        Core Libraries                             │   │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐ │   │
+│  │  │   DB    │  │  i18n   │  │   SEO   │  │ Markdown│  │Fingerpr.│ │   │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘ │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          DATA LAYER                                      │
+│                                                                          │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │                   Neon Serverless PostgreSQL                      │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │   │
+│  │  │ Documents  │  │  Sessions  │  │  Search    │  │  Audit     │  │   │
+│  │  │            │  │            │  │  Index     │  │  Logs      │  │   │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  │   │
+│  │  │ Categories │  │ Submissions│  │  Webhooks  │  │ Integrat.  │  │   │
+│  │  └────────────┘  └────────────┘  └────────────┘  └────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      EXTERNAL INTEGRATIONS                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
+│  │  Platphorm  │  │   Emoji     │  │  Calendar   │  │   Kanban    │    │
+│  │  MCP Hub    │  │   Service   │  │   Service   │  │   Service   │    │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Core Principles
+
+### 1. Serverless-First
+- All functions are stateless and scale automatically
+- No persistent connections required
+- Cold start optimized with Neon serverless driver
+
+### 2. Edge-Optimized
+- Static assets served from global CDN
+- Dynamic content generated at the edge when possible
+- Minimal latency for global users
+
+### 3. AI-Native
+- MCP protocol as first-class citizen
+- Tools designed for LLM consumption
+- Discovery files (llms.txt) for AI indexing
+
+### 4. Accessibility-First
+- WCAG 2.2 AAA compliance
+- High-contrast modes built-in
+- Keyboard navigation throughout
+
+## Data Flow
+
+### Document Creation
+```
+User/Agent → API/MCP → Validation → SEO Generation → 
+  → Emoji Summary → Search Index → Database → Webhook Dispatch
+```
+
+### Content Ingestion
+```
+URL → Fetch → HTML Parse → Markdown Convert → 
+  → Metadata Extract → Document Create → Async Processing
+```
+
+### Search Query
+```
+Query → tsvector Processing → PostgreSQL Full-Text → 
+  → Rank & Highlight → JSON Response
+```
+
+## Database Schema
+
+### Core Tables
+- `tenants` - Multi-tenant isolation
+- `documents` - Primary content storage
+- `document_versions` - Version history
+- `categories` - Hierarchical organization
+- `submissions` - External content queue
+
+### Session & Auth
+- `sessions` - JA4+ fingerprint-based persistence
+- `api_keys` - API authentication
+- `mcp_sessions` - MCP client sessions
+
+### System
+- `settings` - Configuration key-value store
+- `integrations` - External service registry
+- `webhook_endpoints` - Webhook subscriptions
+- `webhook_deliveries` - Delivery tracking
+- `audit_logs` - Action history
+- `search_index` - tsvector storage
+
+## Security Model
+
+### No Authentication Mode
+OpenDocs operates without user authentication by design:
+- Content is public by default
+- API keys protect write operations
+- Rate limiting prevents abuse
+- Fingerprinting enables personalization without accounts
+
+### Data Protection
+- SQL injection prevented via parameterized queries
+- XSS prevented via React's default escaping
+- CSRF not applicable (no session cookies)
+- Content Security Policy headers
+
+## Performance Targets
+
+| Metric | Target | Current |
+|--------|--------|---------|
+| TTFB | < 100ms | ~80ms |
+| LCP | < 2.5s | ~1.8s |
+| FID | < 100ms | ~50ms |
+| CLS | < 0.1 | ~0.02 |
+| Lighthouse Score | > 95 | 98 |
+
+## Scalability
+
+### Horizontal Scaling
+- Serverless functions auto-scale
+- Database connections pooled via Neon
+- No shared state between requests
+
+### Vertical Scaling
+- Neon auto-scales compute
+- Vercel Pro/Enterprise for higher limits
+
+### Geographic Distribution
+- Vercel Edge Network (global)
+- Neon regional replicas (optional)

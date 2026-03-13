@@ -1,0 +1,30 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "languageIds": ["markdown", "mdx", "plaintext"],
+    "ignorePaths": [
+        "node_modules",
+        ".locales",
+        ".translations",
+        ".git",
+        "dist",
+        "build",
+        "coverage",
+        ".next"
+    ],
+    "dictionaryDefinitions": [],
+    "dictionaries": [
+        "cspell:en-us",
+        "cspell:en-gb"
+    ],
+    "words": [
+        "opendocs",
+        "webby"
+    ],
+    "ignoreWords": [],
+    "ignoreRegexes": [
+        "https?://[^\\s]+",
+        "```[\\s\\S]*?```"
+    ],
+    "import": []
+}

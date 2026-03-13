@@ -1,0 +1,108 @@
+/* TEAM */
+
+Creator: Michael Barbine
+Site: https://platphormnews.com
+GitHub: @michaelbarbine
+
+/* SITE */
+
+Project: OpenDocs
+Description: Open-source documentation platform with MCP integration
+Standards: HTML5, CSS3, TypeScript, JSON-RPC 2.0, MCP
+Components: Next.js, React, Tailwind CSS, PostgreSQL
+
+/* LICENSE */
+
+MIT License
+Copyright (c) 2024 Platphorm News
+
+/* PHILOSOPHY */
+
+Simple. No authentication. No ads. Just docs.
+
+/* CONTACT */
+
+General: hello@platphormnews.com
+Support: support@platphormnews.com
+Security: security@platphormnews.com
+Press: press@platphormnews.com
+
+/* PROJECT DOCUMENTATION */
+All project docs are publicly accessible — no authentication required.
+
+Index:       https://docs.platphormnews.com/api/v1/docs
+MCP:         https://docs.platphormnews.com/api/mcp
+LLMs index:  https://docs.platphormnews.com/llms.txt
+Humans:      https://docs.platphormnews.com/humans.txt
+
+Individual docs (append ?format=raw for plain markdown):
+
+README:           https://docs.platphormnews.com/api/v1/docs/readme
+Architecture:     https://docs.platphormnews.com/api/v1/docs/architecture
+API Reference:    https://docs.platphormnews.com/api/v1/docs/api
+Features:         https://docs.platphormnews.com/api/v1/docs/features
+Standards:        https://docs.platphormnews.com/api/v1/docs/standards
+Ecosystem:        https://docs.platphormnews.com/api/v1/docs/ecosystem
+Integrations:     https://docs.platphormnews.com/api/v1/docs/integrations
+Use Cases:        https://docs.platphormnews.com/api/v1/docs/use-cases
+Roadmap:          https://docs.platphormnews.com/api/v1/docs/roadmap
+Testing:          https://docs.platphormnews.com/api/v1/docs/testing
+Contributing:     https://docs.platphormnews.com/api/v1/docs/contributing
+Changelog:        https://docs.platphormnews.com/api/v1/docs/changelog
+Security Policy:  https://docs.platphormnews.com/api/v1/docs/security
+Support:          https://docs.platphormnews.com/api/v1/docs/support
+Code of Conduct:  https://docs.platphormnews.com/api/v1/docs/code-of-conduct
+Contributors:     https://docs.platphormnews.com/api/v1/docs/contributors
+Logging:          https://docs.platphormnews.com/api/v1/docs/logging
+Version:          https://docs.platphormnews.com/api/v1/docs/version
+Design:           https://docs.platphormnews.com/api/v1/docs/design
+Platform:         https://docs.platphormnews.com/api/v1/docs/platform
+Coding Standards: https://docs.platphormnews.com/api/v1/docs/coding
+
+MCP tool access (JSON-RPC 2.0 POST to /api/mcp):
+  list_project_docs  — list all project docs with metadata
+  get_project_doc    — fetch any doc by slug (e.g. {"slug":"readme"})
+  Resource URI:        project-docs://index
+
+/* SUPPORT THE PROJECT */
+
+Givebutter: https://givebutter.com/ph3ar
+PayPal: https://www.paypal.com/paypalme/bignerdlolz
+GitHub Sponsors: https://github.com/sponsors/platphormnews
+Crypto (Coinbase): 0x30589F2e1B8E9a48BBb2c66Ac012FE7ED2A7eB85
+
+/* TRUST & TRACEABILITY */
+
+This project adheres to:
+- WCAG 2.1 Level AA (ADA Title II compliance by April 2026)
+- WCAG 2.2 (ISO/IEC 40500:2025)
+- EU AI Act transparency requirements
+- Core Web Vitals 2026 thresholds
+- Open source best practices
+
+All content changes are tracked, auditable, and traceable.
+Source URLs and identifiers are preserved for provenance.
+
+/* DISCOVERY */
+
+Agent JSON:   https://docs.platphormnews.com/.well-known/agent.json
+Security:     https://docs.platphormnews.com/.well-known/security.txt
+Sitemap:      https://docs.platphormnews.com/sitemap.xml
+RSS Feed:     https://docs.platphormnews.com/rss.xml
+LLMs index:   https://docs.platphormnews.com/llms.txt
+LLMs full:    https://docs.platphormnews.com/llms-full.txt
+LLMs JSON:    https://docs.platphormnews.com/llms-index.json
+Manifest:     https://docs.platphormnews.com/manifest.json
+OpenAPI:      https://docs.platphormnews.com/api/docs
+MCP:          https://docs.platphormnews.com/api/mcp
+
+/* ECOSYSTEM */
+
+OpenDocs is one of 98 projects in the Platphorm News ecosystem.
+Shared standards, shared infrastructure, shared mission.
+
+See: https://docs.platphormnews.com/ecosystem
+
+/* LAST UPDATE */
+
+2026-03-07

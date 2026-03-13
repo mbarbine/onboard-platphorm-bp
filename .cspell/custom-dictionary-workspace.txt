@@ -1,0 +1,10 @@
+# Custom Dictionary Words
+botid
+cmdk
+geolocation
+Givebutter
+initialisation
+modelcontextprotocol
+Streamable
+Turbopack
+vaul

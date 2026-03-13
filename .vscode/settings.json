@@ -1,0 +1,22 @@
+{
+    "cSpell.words": [
+        "Automations",
+        "CCPA",
+        "Contentful",
+        "llms",
+        "Microdata",
+        "opendocs",
+        "Platphorm",
+        "platphormnews",
+        "tsvector",
+        "WCAG"
+    ],
+    "cSpell.customDictionaries": {
+        "custom-dictionary-workspace": {
+            "name": "custom-dictionary-workspace",
+            "path": "${workspaceFolder:opendocs-webby}/.cspell/custom-dictionary-workspace.txt",
+            "addWords": true,
+            "scope": "workspace"
+        }
+    }
+}
