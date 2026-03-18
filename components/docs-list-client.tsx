@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { FileText, Calendar, User, Search, Filter } from 'lucide-react'
+import { FileText, Calendar, User, Search, Filter, X } from 'lucide-react'
 
 interface DocItem {
   id: string
@@ -58,6 +58,7 @@ function groupByCategory(docs: DocItem[]): Record<string, DocItem[]> {
 export function DocsListClient({ documents, categories }: DocsListClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const inputRef = useRef<HTMLInputElement>(null)
   const [selectedAudience, setSelectedAudience] = useState('all')
 
   const audienceOptions = useMemo(() => {
@@ -119,11 +120,24 @@ export function DocsListClient({ documents, categories }: DocsListClientProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            ref={inputRef}
             placeholder="Search docs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 pr-9"
           />
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('')
+                inputRef.current?.focus()
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
         <div className="flex gap-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
