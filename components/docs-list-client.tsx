@@ -191,7 +191,7 @@ export function DocsListClient({ documents, categories }: DocsListClientProps) {
                       setSelectedCategory('all')
                       setSelectedAudience('all')
                     }}
-                    className="text-primary underline"
+                    className="text-primary underline hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
                   >
                     Clear all filters
                   </button>
