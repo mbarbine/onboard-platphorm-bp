@@ -140,7 +140,7 @@ function SearchCommand() {
               className="border-0 focus-visible:ring-0"
               autoFocus
             />
-            <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+            <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close search">
               <X className="h-4 w-4" />
             </Button>
           </div>
