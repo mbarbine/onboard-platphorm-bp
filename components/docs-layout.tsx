@@ -135,6 +135,7 @@ function SearchCommand() {
             <Search className="h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search documentation..."
+              aria-label="Search documentation"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="border-0 focus-visible:ring-0"

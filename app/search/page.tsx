@@ -106,6 +106,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               type="search"
               name="q"
               placeholder="Search docs..."
+              aria-label="Search documentation"
               defaultValue={query}
               className="pl-10"
               autoFocus

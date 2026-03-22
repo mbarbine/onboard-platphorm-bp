@@ -4,3 +4,7 @@
 ## 2025-03-21 - Added aria-label to Icon-Only Copy Buttons
 **Learning:** Found an accessibility issue pattern where icon-only "Copy" buttons (using `Copy` or `Check` icons) lacked `aria-label` attributes. This makes the buttons inaccessible to screen reader users, who would not know what the buttons do. This pattern existed across multiple components (`api-code-block.tsx`, `markdown-renderer.tsx`, and `settings/page.tsx`). Providing dynamic `aria-label`s (e.g., changing from "Copy code" to "Copied!") significantly improves feedback for assistive technologies.
 **Action:** When implementing or reviewing icon-only buttons, always ensure an `aria-label` is present and accurately describes the action. If the button state changes (like a copy action succeeding), update the `aria-label` dynamically to reflect the new state.
+
+## 2025-03-22 - Missing aria-label on inputs relying solely on placeholders
+**Learning:** Inputs (like search bars or select dropdowns) that use placeholders for visual context but lack explicit visible `<label>` elements are a common accessibility pattern failure. Screen readers often do not reliably read placeholders as labels, making the purpose of the input unclear to non-visual users.
+**Action:** Always provide an explicit `aria-label` or `aria-labelledby` attribute on any form control (`<input>`, `<SelectTrigger>`, `<button>`, etc.) that does not have a linked, visible `<label>` element.
