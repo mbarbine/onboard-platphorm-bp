@@ -122,6 +122,7 @@ export function DocsListClient({ documents, categories }: DocsListClientProps) {
           <Input
             ref={inputRef}
             placeholder="Search docs..."
+            aria-label="Search documentation"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 pr-9"
@@ -141,7 +142,7 @@ export function DocsListClient({ documents, categories }: DocsListClientProps) {
         </div>
         <div className="flex gap-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px]" aria-label="Filter by category">
               <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -156,7 +157,7 @@ export function DocsListClient({ documents, categories }: DocsListClientProps) {
           </Select>
           {audienceOptions.length > 0 && (
             <Select value={selectedAudience} onValueChange={setSelectedAudience}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-[160px]" aria-label="Filter by audience">
                 <User className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                 <SelectValue placeholder="Audience" />
               </SelectTrigger>
