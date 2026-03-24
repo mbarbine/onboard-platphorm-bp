@@ -8,3 +8,7 @@
 ## 2025-03-22 - Missing aria-label on inputs relying solely on placeholders
 **Learning:** Inputs (like search bars or select dropdowns) that use placeholders for visual context but lack explicit visible `<label>` elements are a common accessibility pattern failure. Screen readers often do not reliably read placeholders as labels, making the purpose of the input unclear to non-visual users.
 **Action:** Always provide an explicit `aria-label` or `aria-labelledby` attribute on any form control (`<input>`, `<SelectTrigger>`, `<button>`, etc.) that does not have a linked, visible `<label>` element.
+
+## 2025-03-24 - Missing Focus Indicators on Manually Injected HTML Buttons
+**Learning:** Interactive elements like buttons that are generated via string replacement and injected as raw HTML (e.g., in `markdown-renderer.tsx` for copy buttons) often miss keyboard focus indicators (`focus-visible:ring-2`, etc.) because they aren't standard design system components. This makes keyboard navigation difficult or impossible for users relying on visual focus.
+**Action:** Always ensure that interactive elements generated via string replacement include standard keyboard focus utility classes (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`) to maintain accessibility parity with standard React components.
