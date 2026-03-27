@@ -21,7 +21,7 @@ pnpm dev
 - **REST API** — Full CRUD with search, webhooks, and versioning
 - **Multi-Source** — Submit content from any URL
 - **Full-Text Search** — PostgreSQL tsvector-powered
-- **Accessible** — WCAG 2.2 AA compliant
+- **Accessible** — WCAG 2.2 AA compliant (including robust keyboard navigation)
 - **i18n** — 10 languages
 
 ## Environment Variables

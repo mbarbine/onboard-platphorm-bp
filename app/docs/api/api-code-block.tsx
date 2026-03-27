@@ -25,7 +25,7 @@ export function ApiCodeBlock({ code }: { code: string }) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
               onClick={handleCopy}
               aria-label={copied ? 'Copied!' : 'Copy to clipboard'}
             >

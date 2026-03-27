@@ -8,3 +8,7 @@
 ## 2025-03-22 - Missing aria-label on inputs relying solely on placeholders
 **Learning:** Inputs (like search bars or select dropdowns) that use placeholders for visual context but lack explicit visible `<label>` elements are a common accessibility pattern failure. Screen readers often do not reliably read placeholders as labels, making the purpose of the input unclear to non-visual users.
 **Action:** Always provide an explicit `aria-label` or `aria-labelledby` attribute on any form control (`<input>`, `<SelectTrigger>`, `<button>`, etc.) that does not have a linked, visible `<label>` element.
+
+## 2025-03-22 - Keyboard accessibility for hover-revealed elements
+**Learning:** Elements that are visually hidden until their container is hovered (`opacity-0 group-hover:opacity-100`) are inaccessible to keyboard users because tabbing into them doesn't trigger the hover state, leaving them invisible while focused.
+**Action:** Whenever using `group-hover:opacity-100` to reveal interactive elements, always pair it with `group-focus-within:opacity-100` (or `focus-within:opacity-100` on the parent) to ensure the elements become visible when receiving keyboard focus.

@@ -310,7 +310,7 @@ export default async function HomePage() {
                           {doc.description || 'No description available'}
                         </CardDescription>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0" />
                     </div>
                     <div className="flex flex-wrap items-center gap-2 pt-2">
                       {doc.category && (
