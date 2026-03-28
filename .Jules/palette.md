@@ -12,3 +12,7 @@
 ## 2025-03-22 - Keyboard accessibility for hover-revealed elements
 **Learning:** Elements that are visually hidden until their container is hovered (`opacity-0 group-hover:opacity-100`) are inaccessible to keyboard users because tabbing into them doesn't trigger the hover state, leaving them invisible while focused.
 **Action:** Whenever using `group-hover:opacity-100` to reveal interactive elements, always pair it with `group-focus-within:opacity-100` (or `focus-within:opacity-100` on the parent) to ensure the elements become visible when receiving keyboard focus.
+
+## 2025-03-23 - Focus Rings on Manually Injected HTML Buttons
+**Learning:** Interactive elements that are manually injected into HTML strings (like the copy buttons inside dynamically rendered markdown code blocks) lack the standard Tailwind focus ring utilities provided by React component libraries (like Radix or shadcn/ui). This causes a significant accessibility regression because keyboard users cannot see which element has focus.
+**Action:** Always explicitly include Tailwind focus ring utilities (`focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-ring`) on any interactive element (e.g., `<button>`, `<a>`) that is constructed via string replacement or manual HTML injection.
