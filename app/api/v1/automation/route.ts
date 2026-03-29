@@ -78,29 +78,35 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
     return NextResponse.json({ success: false, error: 'Provide document_ids or set all=true' }, { status: 400 })
   }
 
-  const results = []
-  for (const doc of documents) {
-    const seo = await generateSEOMetadata({
-      title: doc.title as string,
-      description: doc.description as string || '',
-      content: doc.content as string,
-      slug: doc.slug as string,
-      category: doc.category as string,
-    }, baseUrl)
+  const results: Array<{ id: string, slug: string, status: string }> = []
+  const CHUNK_SIZE = 10
 
-    await sql`
-      UPDATE documents SET
-        og_title = ${seo.ogTitle},
-        og_description = ${seo.ogDescription},
-        og_image = ${seo.ogImage},
-        canonical_url = ${seo.canonicalUrl},
-        reading_time_minutes = ${seo.readingTimeMinutes},
-        word_count = ${seo.wordCount},
-        updated_at = NOW()
-      WHERE id = ${doc.id}
-    `
+  for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
+    const chunk = documents.slice(i, i + CHUNK_SIZE)
 
-    results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+    await Promise.all(chunk.map(async (doc) => {
+      const seo = await generateSEOMetadata({
+        title: doc.title as string,
+        description: doc.description as string || '',
+        content: doc.content as string,
+        slug: doc.slug as string,
+        category: doc.category as string,
+      }, baseUrl)
+
+      await sql`
+        UPDATE documents SET
+          og_title = ${seo.ogTitle},
+          og_description = ${seo.ogDescription},
+          og_image = ${seo.ogImage},
+          canonical_url = ${seo.canonicalUrl},
+          reading_time_minutes = ${seo.readingTimeMinutes},
+          word_count = ${seo.wordCount},
+          updated_at = NOW()
+        WHERE id = ${doc.id}
+      `
+
+      results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+    }))
   }
 
   return NextResponse.json({
