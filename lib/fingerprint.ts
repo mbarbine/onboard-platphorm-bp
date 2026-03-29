@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { sql, DEFAULT_TENANT_ID } from './db'
 import crypto from 'crypto'
+import { SESSION_SALT } from './site-config'
 
 // JA4+ Fingerprint components
 export interface FingerprintComponents {
@@ -92,9 +93,13 @@ function extractPlatform(platform: string): string {
 
 // Generate a stable hash from fingerprint + IP for session lookup
 export function generateSessionHash(fingerprint: string, ip: string): string {
+  if (!SESSION_SALT) {
+    throw new Error('SESSION_SALT environment variable is not set')
+  }
+
   return crypto
     .createHash('sha256')
-    .update(`${fingerprint}:${ip}:${process.env.SESSION_SALT || 'platform-salt'}`)
+    .update(`${fingerprint}:${ip}:${SESSION_SALT}`)
     .digest('hex')
 }
 

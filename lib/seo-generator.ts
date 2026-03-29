@@ -342,22 +342,14 @@ export async function generateSEOMetadata(
   }
 }
 
-// Update document with generated SEO metadata
-export async function updateDocumentSEO(
-  slug: string,
+/**
+ * Update a document's SEO metadata in the database using provided metadata.
+ * This avoids a redundant database SELECT if the document data is already available.
+ */
+export async function updateDocumentSEOFromMeta(
+  doc: DocumentMeta,
   baseUrl: string
 ): Promise<void> {
-  // Fetch the document
-  const docs = await sql`
-    SELECT slug, title, description, content, category, tags, 
-           source_url, author_name, published_at
-    FROM documents
-    WHERE slug = ${slug} AND tenant_id = ${DEFAULT_TENANT_ID}
-  ` as DocumentMeta[]
-  
-  if (docs.length === 0) return
-  
-  const doc = docs[0]
   const seo = await generateSEOMetadata({
     ...doc,
     tags: Array.isArray(doc.tags) ? doc.tags : JSON.parse((doc.tags as unknown as string) || '[]'),
@@ -377,21 +369,44 @@ export async function updateDocumentSEO(
         word_count = ${seo.wordCount},
         emoji_summary = ${seo.emojiSummary},
         updated_at = NOW()
-    WHERE slug = ${slug} AND tenant_id = ${DEFAULT_TENANT_ID}
+    WHERE slug = ${doc.slug} AND tenant_id = ${DEFAULT_TENANT_ID}
   `
+}
+
+// Update document with generated SEO metadata
+export async function updateDocumentSEO(
+  slug: string,
+  baseUrl: string
+): Promise<void> {
+  // Fetch the document
+  const docs = await sql`
+    SELECT slug, title, description, content, category, tags,
+           source_url, author_name, published_at
+    FROM documents
+    WHERE slug = ${slug} AND tenant_id = ${DEFAULT_TENANT_ID}
+  ` as DocumentMeta[]
+
+  if (docs.length === 0) return
+
+  await updateDocumentSEOFromMeta(docs[0], baseUrl)
 }
 
 // Batch update SEO for all documents
 export async function updateAllDocumentsSEO(baseUrl: string): Promise<number> {
   const docs = await sql`
-    SELECT slug FROM documents
+    SELECT slug, title, description, content, category, tags,
+           source_url, author_name, published_at
+    FROM documents
     WHERE tenant_id = ${DEFAULT_TENANT_ID}
       AND status = 'published'
       AND deleted_at IS NULL
-  ` as { slug: string }[]
+  ` as DocumentMeta[]
   
-  for (const doc of docs) {
-    await updateDocumentSEO(doc.slug, baseUrl)
+  // Parallel updates with concurrency limit
+  const CHUNK_SIZE = 10
+  for (let i = 0; i < docs.length; i += CHUNK_SIZE) {
+    const chunk = docs.slice(i, i + CHUNK_SIZE)
+    await Promise.all(chunk.map(doc => updateDocumentSEOFromMeta(doc, baseUrl)))
   }
   
   return docs.length
