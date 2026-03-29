@@ -4,7 +4,7 @@ import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/
 import { z } from 'zod'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
 import type { Document } from '@/lib/db'
-import { generateSEOMetadata, updateDocumentSEO, generateAEOMetadata, generateGEOMetadata, generateFullOptimization } from '@/lib/seo-generator'
+import { generateSEOMetadata, updateDocumentSEO, updateDocumentSEOFromMeta, generateAEOMetadata, generateGEOMetadata, generateFullOptimization } from '@/lib/seo-generator'
 import { parseMarkdown, extractTableOfContents } from '@/lib/markdown'
 import { generateSimpleSlug } from '@/lib/auto-name'
 import crypto from 'crypto'
@@ -618,8 +618,20 @@ export function createMcpServer(): McpServer {
     async ({ slug }) => {
       const baseUrl = await getBaseUrl()
       if (slug === 'all') {
-        const docs = await sql`SELECT slug FROM documents WHERE tenant_id = ${DEFAULT_TENANT_ID} AND deleted_at IS NULL`
-        for (const doc of docs) await updateDocumentSEO(doc.slug as string, baseUrl)
+        const docs = await sql`
+          SELECT slug, title, description, content, category, tags,
+                 source_url, author_name, published_at
+          FROM documents
+          WHERE tenant_id = ${DEFAULT_TENANT_ID} AND deleted_at IS NULL
+        ` as any[]
+
+        // Parallel updates with concurrency limit
+        const CHUNK_SIZE = 10
+        for (let i = 0; i < docs.length; i += CHUNK_SIZE) {
+          const chunk = docs.slice(i, i + CHUNK_SIZE)
+          await Promise.all(chunk.map(doc => updateDocumentSEOFromMeta(doc, baseUrl)))
+        }
+
         return ok({ regenerated: docs.length })
       }
       await updateDocumentSEO(slug, baseUrl)
