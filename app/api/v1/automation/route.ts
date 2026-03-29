@@ -4,6 +4,7 @@ import { generateSEOMetadata, generateShareLinks, generateStructuredData } from 
 import { generateEmojiSummary } from '@/lib/emoji'
 import { parseMarkdown, extractTableOfContents } from '@/lib/markdown'
 import { SITE_NAME } from '@/lib/site-config'
+import { logger } from '@/lib/logger'
 
 /**
  * Automation API - Batch operations and workflow integration
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('[Automation API Error]', error)
+    logger.error('[Automation API Error]', { error: error instanceof Error ? error : String(error) })
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
