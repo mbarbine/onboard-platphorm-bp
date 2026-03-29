@@ -90,7 +90,7 @@ export const WEBHOOK_EVENT_HEADER =
 export const STORAGE_PREFIX = process.env.NEXT_PUBLIC_STORAGE_PREFIX || SERVICE_NAME
 
 /** Default salt for session fingerprinting */
-export const SESSION_SALT = process.env.SESSION_SALT || `${SERVICE_NAME}-salt`
+export const SESSION_SALT = process.env.SESSION_SALT
 
 // ── Ecosystem Integration URLs ───────────────────────────────────────────────
 
