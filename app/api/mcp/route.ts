@@ -40,10 +40,15 @@ const PROJECT_DOCS: Record<string, { file: string; description: string; category
   'coding':          { file: 'CODING.md',           description: 'Coding standards and development practices',          category: 'development'  },
 }
 
+const baseUrlSchema = z.string().url()
+
 async function getBaseUrl(): Promise<string> {
   try {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
-    if (result[0]?.value) return JSON.parse(result[0].value as string)
+    if (result[0]?.value) {
+      const parsed = JSON.parse(result[0].value as string)
+      return baseUrlSchema.parse(parsed)
+    }
   } catch { /* ignore */ }
   return 'https://docs.platphormnews.com'
 }
