@@ -3,6 +3,7 @@ import { sql, DEFAULT_TENANT_ID } from './db'
 import { APIResponse } from './api-types'
 import { API_KEY_PREFIX, WEBHOOK_SIGNATURE_HEADER, WEBHOOK_EVENT_HEADER } from './site-config'
 import crypto from 'crypto'
+import { logger } from './logger'
 
 export function generateRequestId(): string {
   return crypto.randomUUID()
@@ -106,7 +107,7 @@ export async function logAudit(
       VALUES (${tenantId}, ${action}, ${entityType}, ${entityId}, ${actorId}, ${actorType}, ${JSON.stringify(metadata)}, ${ipAddress}, ${userAgent})
     `
   } catch (error) {
-    console.error('Failed to log audit:', error)
+    logger.error('Failed to log audit', { error: error instanceof Error ? error : String(error) })
   }
 }
 
@@ -181,7 +182,7 @@ export async function triggerWebhooks(
       }).catch(() => {}).finally(() => clearTimeout(deliveryTimeout))
     }
   } catch (error) {
-    console.error('Failed to trigger webhooks:', error)
+    logger.error('Failed to trigger webhooks', { error: error instanceof Error ? error : String(error) })
   }
 }
 
