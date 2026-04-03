@@ -16,6 +16,7 @@
 ## 2025-03-23 - Focus Rings on Manually Injected HTML Buttons
 **Learning:** Interactive elements that are manually injected into HTML strings (like the copy buttons inside dynamically rendered markdown code blocks) lack the standard Tailwind focus ring utilities provided by React component libraries (like Radix or shadcn/ui). This causes a significant accessibility regression because keyboard users cannot see which element has focus.
 **Action:** Always explicitly include Tailwind focus ring utilities (`focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-ring`) on any interactive element (e.g., `<button>`, `<a>`) that is constructed via string replacement or manual HTML injection.
-## 2026-03-30 - Fix Nested Interactive Elements
-**Learning:** React elements utilizing interactive components (e.g. `<Button>`) inside of other interactive elements (e.g. `<Link>`) cause severe accessibility issues (since `<button>` becomes nested within `<a>`). This breaks HTML validation and confuses screen readers.
-**Action:** When using a button purely for its style to act as a link, strictly use Radix's `asChild` pattern (or equivalent in the design system, such as `<Button asChild>`) and pass the `<Link>` component inside it.
+
+## 2026-04-03 - Dialog triggers and Link/Button nesting
+**Learning:** Components functioning as modal/dialog triggers (like a search command button) often lack explicit ARIA attributes indicating their behavior. Additionally, using a Button component simply for styling and placing a Next.js Link inside it leads to invalid HTML (nesting a button inside an anchor or vice versa), which causes major accessibility violations.
+**Action:** Always add `aria-haspopup="dialog"` and `aria-expanded` to buttons that open modals. Use the `asChild` pattern provided by Radix/shadcn (`<Button asChild><Link>...</Link></Button>`) to apply button styles to an anchor element correctly and safely.
