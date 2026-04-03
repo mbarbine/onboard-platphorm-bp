@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { getCategories, getCategory } from '@/lib/data'
 import { DocsLayout } from '@/components/docs-layout'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -10,34 +11,6 @@ import { SITE_NAME } from '@/lib/site-config'
 
 interface PageProps {
   params: Promise<{ slug: string }>
-}
-
-async function getCategories(): Promise<(Category & { document_count: number })[]> {
-  try {
-    const categories = await sql`
-      SELECT c.*, 
-        (SELECT COUNT(*)::int FROM documents d WHERE d.category = c.slug AND d.deleted_at IS NULL AND d.status = 'published') as document_count
-      FROM categories c
-      WHERE c.tenant_id = ${DEFAULT_TENANT_ID}
-      ORDER BY c.order_index ASC, c.name ASC
-    ` as (Category & { document_count: number })[]
-    return categories
-  } catch {
-    return []
-  }
-}
-
-async function getCategory(slug: string): Promise<Category | null> {
-  try {
-    const categories = await sql`
-      SELECT * FROM categories
-      WHERE tenant_id = ${DEFAULT_TENANT_ID}
-        AND slug = ${slug}
-    ` as Category[]
-    return categories[0] || null
-  } catch {
-    return null
-  }
 }
 
 async function getDocumentsByCategory(categorySlug: string): Promise<Document[]> {
