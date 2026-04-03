@@ -76,6 +76,7 @@ describe('GET /api/v1/categories', () => {
 
     expect(response.status).toBe(500)
     expect(data.success).toBe(false)
+    expect(data.error.code).toBe('FETCH_ERROR')
   })
 })
 
