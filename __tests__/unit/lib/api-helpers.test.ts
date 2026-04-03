@@ -4,6 +4,7 @@ import {
   generateSlug,
   hasScope,
   generateApiKey,
+  apiResponse,
 } from '@/lib/api-helpers'
 
 // Mock modules that depend on runtime
@@ -15,6 +16,13 @@ vi.mock('@/lib/db', () => ({
 vi.mock('@/lib/site-config', () => ({
   API_KEY_PREFIX: 'ob_',
 }))
+
+vi.mock('next/server', () => ({
+  NextResponse: {
+    json: vi.fn((body, init) => ({ body, init }))
+  }
+}))
+
 
 describe('getPaginationParams', () => {
   it('returns default values', () => {
@@ -159,5 +167,41 @@ describe('generateApiKey', () => {
     const { key } = generateApiKey()
     // Prefix 'ob_' (3) + 32 bytes hex (64) = 67 characters
     expect(key.length).toBe(67)
+  })
+})
+
+
+describe('apiResponse', () => {
+  it('returns data correctly with default status', () => {
+    const data = { message: 'Hello' }
+    const result = apiResponse(data) as any
+
+    expect(result.init).toEqual({ status: 200 })
+    expect(result.body).toEqual({
+      success: true,
+      data,
+      meta: {
+        request_id: expect.any(String),
+      },
+    })
+  })
+
+  it('returns data correctly with custom status', () => {
+    const data = { message: 'Created' }
+    const result = apiResponse(data, undefined, 201) as any
+
+    expect(result.init).toEqual({ status: 201 })
+  })
+
+  it('merges custom meta with generated request_id', () => {
+    const data = { message: 'Hello' }
+    const customMeta = { page: 1, total: 10 }
+    const result = apiResponse(data, customMeta) as any
+
+    expect(result.body.meta).toEqual({
+      page: 1,
+      total: 10,
+      request_id: expect.any(String),
+    })
   })
 })
