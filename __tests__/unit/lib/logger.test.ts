@@ -143,6 +143,20 @@ describe('generateRequestId', () => {
     const ids = new Set(Array.from({ length: 100 }, () => generateRequestId()))
     expect(ids.size).toBe(100)
   })
+
+  it('has correct format with three underscore-separated parts', () => {
+    const id = generateRequestId()
+    const parts = id.split('_')
+    expect(parts.length).toBe(3)
+    expect(parts[0]).toBe('req')
+  })
+
+  it('contains only alphanumeric characters in the variable parts', () => {
+    const id = generateRequestId()
+    const parts = id.split('_')
+    expect(parts[1]).toMatch(/^[a-z0-9]+$/)
+    expect(parts[2]).toMatch(/^[a-z0-9]+$/)
+  })
 })
 
 describe('getRequestContext', () => {
