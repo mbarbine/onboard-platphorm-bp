@@ -1,4 +1,3 @@
-import { DocumentMeta } from "@/lib/seo-generator"
 import { NextResponse } from 'next/server'
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
@@ -653,7 +652,7 @@ export function createMcpServer(): McpServer {
       for (const p of preparedDocs) {
         const docId = insertedMap.get(p.slug)
         if (docId) {
-          searchIndexData.push({ id: docId, content: p.doc.title + ' ' + p.doc.content })
+          searchIndexData.push({ id: docId as string, content: p.doc.title + ' ' + p.doc.content })
           results.push({ slug: p.slug, status: 'created' })
         } else {
           results.push({ slug: p.slug, status: 'skipped (exists)' })
@@ -800,21 +799,22 @@ export function createMcpServer(): McpServer {
           AND events @> ${JSON.stringify([event])}::jsonb
       `
       const payload = { event, timestamp: new Date().toISOString(), data: slug ? { slug } : {} }
-      const results = []
-      for (const wh of webhooks) {
-        try {
-          assertExternalUrl(wh.url as string)
-          const signature = crypto.createHmac('sha256', wh.secret as string).update(JSON.stringify(payload)).digest('hex')
-          const resp = await fetchWithTimeout(wh.url as string, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Webhook-Signature': signature },
-            body: JSON.stringify(payload),
-          }, 10_000)
-          results.push({ webhook_id: wh.id, status: resp.status })
-        } catch (err) {
-          results.push({ webhook_id: wh.id, error: (err as Error).message })
-        }
-      }
+      const results = await Promise.all(
+        webhooks.map(async (wh) => {
+          try {
+            assertExternalUrl(wh.url as string)
+            const signature = crypto.createHmac('sha256', wh.secret as string).update(JSON.stringify(payload)).digest('hex')
+            const resp = await fetchWithTimeout(wh.url as string, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'X-Webhook-Signature': signature },
+              body: JSON.stringify(payload),
+            }, 10_000)
+            return { webhook_id: wh.id, status: resp.status }
+          } catch (err) {
+            return { webhook_id: wh.id, error: (err as Error).message }
+          }
+        })
+      )
       return ok({ event, triggered: webhooks.length, results })
     },
   )

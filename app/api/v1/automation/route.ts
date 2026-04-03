@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    logger.error('[Automation API Error]', { error: error instanceof Error ? error : String(error) })
+    console.error('[Automation API Error]', { error: error instanceof Error ? error : String(error) })
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -105,7 +105,7 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
         WHERE id = ${doc.id}
       `
 
-      results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+      results.push({ id: doc.id as string, slug: doc.slug as string, status: 'updated' })
     }))
   }
 
