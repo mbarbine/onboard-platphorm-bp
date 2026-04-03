@@ -114,6 +114,7 @@ vi.mock('@/lib/db', () => ({
 }))
 vi.mock('@/lib/seo-generator', () => ({
   generateSEOMetadata: generateSEOMetadataMock,
+  updateDocumentSEOFromMeta: vi.fn().mockResolvedValue(true),
   updateDocumentSEO: updateDocumentSEOMock,
   generateAEOMetadata: vi.fn().mockReturnValue({
     questions: ['What is the ultimate taco guide?'],

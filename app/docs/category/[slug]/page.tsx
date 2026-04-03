@@ -60,12 +60,12 @@ export default async function CategoryPage({ params }: PageProps) {
     <DocsLayout categories={categories}>
       {/* Back link */}
       <div className="mb-6">
-        <Link href="/docs">
-          <Button variant="ghost" size="sm" className="gap-1 -ml-2">
+        <Button variant="ghost" size="sm" className="gap-1 -ml-2" asChild>
+          <Link href="/docs">
             <ChevronLeft className="h-4 w-4" />
             All documentation
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <div className="space-y-2 mb-8">

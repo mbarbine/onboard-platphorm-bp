@@ -328,20 +328,20 @@ export function DocsLayout({ children, categories }: DocsLayoutProps) {
             <div className="hidden md:flex">
               <SearchCommand />
             </div>
-            <Link href="/search" className="md:hidden">
-              <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="md:hidden" asChild>
+              <Link href="/search">
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href={GITHUB_REPO} target="_blank" rel="noopener">
-                  <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href={GITHUB_REPO} target="_blank" rel="noopener">
                     <Github className="h-5 w-5" />
                     <span className="sr-only">Clone on GitHub</span>
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>Clone this repo on GitHub</TooltipContent>
             </Tooltip>
