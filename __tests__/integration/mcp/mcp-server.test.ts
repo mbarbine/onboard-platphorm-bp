@@ -798,7 +798,7 @@ describe('📥 bulk_import', () => {
     // getBaseUrl() → auto
     // Doc 1: sql`NULL` frag auto | INSERT doc1 RETURNING → created | INSERT idx(fallback)
     // Doc 2: sql`NULL` frag auto | INSERT doc2 ON CONFLICT DO NOTHING → [] → skipped
-    db([{ id: 'bulk-001', slug: 'taco-al-pastor' }])
+    db([{ id: 'bulk-001', slug: 'taco-al-pastor-a1b2' }])
     const result = toolJSON(await client.callTool({
       name: 'bulk_import',
       arguments: {
