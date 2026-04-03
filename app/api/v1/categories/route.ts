@@ -8,6 +8,7 @@ import {
   logAudit,
 } from '@/lib/api-helpers'
 import { CategoryCreateInput } from '@/lib/api-types'
+import { logger } from '@/lib/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,7 +44,7 @@ export async function GET() {
       flat: categories,
     })
   } catch (error) {
-    console.error('Error fetching categories:', error)
+    logger.error('Error fetching categories', { error: error instanceof Error ? error : String(error) })
     return apiError('FETCH_ERROR', 'Failed to fetch categories', 500)
   }
 }
@@ -117,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     return apiResponse(category, undefined, 201)
   } catch (error) {
-    console.error('Error creating category:', error)
+    logger.error('Error creating category', { error: error instanceof Error ? error : String(error) })
     return apiError('CREATE_ERROR', 'Failed to create category', 500)
   }
 }
