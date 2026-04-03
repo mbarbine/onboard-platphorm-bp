@@ -1,30 +1,16 @@
 import { sql, DEFAULT_TENANT_ID, Category } from '@/lib/db'
+import { getCategories } from '@/lib/data'
 import { DocsLayout } from '@/components/docs-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Zap, Wrench, Database, MessageSquare } from 'lucide-react'
 
-import { SITE_NAME } from '@/lib/site-config'
+import {  SITE_NAME , BASE_URL } from '@/lib/site-config'
 
 export const metadata = {
   title: 'MCP Integration',
   description: `Model Context Protocol integration guide for ${SITE_NAME}. Connect AI agents like Claude, GPT, and other MCP-compatible tools to your documentation.`,
-}
-
-async function getCategories(): Promise<(Category & { document_count: number })[]> {
-  try {
-    const categories = await sql`
-      SELECT c.*, 
-        (SELECT COUNT(*)::int FROM documents d WHERE d.category = c.slug AND d.deleted_at IS NULL AND d.status = 'published') as document_count
-      FROM categories c
-      WHERE c.tenant_id = ${DEFAULT_TENANT_ID}
-      ORDER BY c.order_index ASC, c.name ASC
-    ` as (Category & { document_count: number })[]
-    return categories
-  } catch {
-    return []
-  }
 }
 
 async function getBaseUrl(): Promise<string> {
@@ -39,7 +25,7 @@ async function getBaseUrl(): Promise<string> {
   } catch {
     // ignore
   }
-  return 'https://docs.platphormnews.com'
+  return BASE_URL
 }
 
 const mcpTools = [

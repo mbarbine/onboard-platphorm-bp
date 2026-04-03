@@ -30,34 +30,34 @@ Press: press@platphormnews.com
 /* PROJECT DOCUMENTATION */
 All project docs are publicly accessible — no authentication required.
 
-Index:       https://docs.platphormnews.com/api/v1/docs
-MCP:         https://docs.platphormnews.com/api/mcp
-LLMs index:  https://docs.platphormnews.com/llms.txt
-Humans:      https://docs.platphormnews.com/humans.txt
+Index:       http://localhost:3000/api/v1/docs
+MCP:         http://localhost:3000/api/mcp
+LLMs index:  http://localhost:3000/llms.txt
+Humans:      http://localhost:3000/humans.txt
 
 Individual docs (append ?format=raw for plain markdown):
 
-README:           https://docs.platphormnews.com/api/v1/docs/readme
-Architecture:     https://docs.platphormnews.com/api/v1/docs/architecture
-API Reference:    https://docs.platphormnews.com/api/v1/docs/api
-Features:         https://docs.platphormnews.com/api/v1/docs/features
-Standards:        https://docs.platphormnews.com/api/v1/docs/standards
-Ecosystem:        https://docs.platphormnews.com/api/v1/docs/ecosystem
-Integrations:     https://docs.platphormnews.com/api/v1/docs/integrations
-Use Cases:        https://docs.platphormnews.com/api/v1/docs/use-cases
-Roadmap:          https://docs.platphormnews.com/api/v1/docs/roadmap
-Testing:          https://docs.platphormnews.com/api/v1/docs/testing
-Contributing:     https://docs.platphormnews.com/api/v1/docs/contributing
-Changelog:        https://docs.platphormnews.com/api/v1/docs/changelog
-Security Policy:  https://docs.platphormnews.com/api/v1/docs/security
-Support:          https://docs.platphormnews.com/api/v1/docs/support
-Code of Conduct:  https://docs.platphormnews.com/api/v1/docs/code-of-conduct
-Contributors:     https://docs.platphormnews.com/api/v1/docs/contributors
-Logging:          https://docs.platphormnews.com/api/v1/docs/logging
-Version:          https://docs.platphormnews.com/api/v1/docs/version
-Design:           https://docs.platphormnews.com/api/v1/docs/design
-Platform:         https://docs.platphormnews.com/api/v1/docs/platform
-Coding Standards: https://docs.platphormnews.com/api/v1/docs/coding
+README:           http://localhost:3000/api/v1/docs/readme
+Architecture:     http://localhost:3000/api/v1/docs/architecture
+API Reference:    http://localhost:3000/api/v1/docs/api
+Features:         http://localhost:3000/api/v1/docs/features
+Standards:        http://localhost:3000/api/v1/docs/standards
+Ecosystem:        http://localhost:3000/api/v1/docs/ecosystem
+Integrations:     http://localhost:3000/api/v1/docs/integrations
+Use Cases:        http://localhost:3000/api/v1/docs/use-cases
+Roadmap:          http://localhost:3000/api/v1/docs/roadmap
+Testing:          http://localhost:3000/api/v1/docs/testing
+Contributing:     http://localhost:3000/api/v1/docs/contributing
+Changelog:        http://localhost:3000/api/v1/docs/changelog
+Security Policy:  http://localhost:3000/api/v1/docs/security
+Support:          http://localhost:3000/api/v1/docs/support
+Code of Conduct:  http://localhost:3000/api/v1/docs/code-of-conduct
+Contributors:     http://localhost:3000/api/v1/docs/contributors
+Logging:          http://localhost:3000/api/v1/docs/logging
+Version:          http://localhost:3000/api/v1/docs/version
+Design:           http://localhost:3000/api/v1/docs/design
+Platform:         http://localhost:3000/api/v1/docs/platform
+Coding Standards: http://localhost:3000/api/v1/docs/coding
 
 MCP tool access (JSON-RPC 2.0 POST to /api/mcp):
   list_project_docs  — list all project docs with metadata
@@ -85,23 +85,23 @@ Source URLs and identifiers are preserved for provenance.
 
 /* DISCOVERY */
 
-Agent JSON:   https://docs.platphormnews.com/.well-known/agent.json
-Security:     https://docs.platphormnews.com/.well-known/security.txt
-Sitemap:      https://docs.platphormnews.com/sitemap.xml
-RSS Feed:     https://docs.platphormnews.com/rss.xml
-LLMs index:   https://docs.platphormnews.com/llms.txt
-LLMs full:    https://docs.platphormnews.com/llms-full.txt
-LLMs JSON:    https://docs.platphormnews.com/llms-index.json
-Manifest:     https://docs.platphormnews.com/manifest.json
-OpenAPI:      https://docs.platphormnews.com/api/docs
-MCP:          https://docs.platphormnews.com/api/mcp
+Agent JSON:   http://localhost:3000/.well-known/agent.json
+Security:     http://localhost:3000/.well-known/security.txt
+Sitemap:      http://localhost:3000/sitemap.xml
+RSS Feed:     http://localhost:3000/rss.xml
+LLMs index:   http://localhost:3000/llms.txt
+LLMs full:    http://localhost:3000/llms-full.txt
+LLMs JSON:    http://localhost:3000/llms-index.json
+Manifest:     http://localhost:3000/manifest.json
+OpenAPI:      http://localhost:3000/api/docs
+MCP:          http://localhost:3000/api/mcp
 
 /* ECOSYSTEM */
 
 Onboard is part of the Platphorm News Network.
 Shared standards, shared infrastructure, shared mission.
 
-See: https://docs.platphormnews.com/ecosystem
+See: http://localhost:3000/ecosystem
 
 /* LAST UPDATE */
 

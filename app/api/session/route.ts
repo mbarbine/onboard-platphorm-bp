@@ -1,3 +1,4 @@
+import logger from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { getOrCreateSession, saveDraftToSession, getDraftFromSession, updateSessionPreferences } from '@/lib/fingerprint'
 
@@ -25,7 +26,7 @@ export async function GET() {
       expires_at: session.expires_at,
     })
   } catch (error) {
-    console.error('[v0] Session GET error:', error)
+    logger.error('[v0] Session GET error', { error: error instanceof Error ? error : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
     }
   } catch (error) {
-    console.error('[v0] Session POST error:', error)
+    logger.error('[v0] Session POST error', { error: error instanceof Error ? error : String(error) })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

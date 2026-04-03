@@ -120,7 +120,7 @@ export const DEFAULT_KEYWORDS = [
 // ── Docker / Local Dev Defaults ──────────────────────────────────────────────
 
 export const DB_DEFAULTS = {
-  user: 'platform',
-  password: 'platform',
-  name: 'platform',
+  user: '',
+  password: '',
+  name: '',
 } as const

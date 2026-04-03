@@ -18,7 +18,7 @@ vi.mock('@/lib/seo-generator', () => ({
     ogTitle: 'Test Title',
     ogDescription: 'Test description',
     ogImage: null,
-    canonical: 'https://docs.platphormnews.com/docs/test',
+    canonical: 'http://localhost:3000/docs/test',
     readingTime: 1,
     wordCount: 100,
   }),

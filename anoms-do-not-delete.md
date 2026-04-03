@@ -389,7 +389,7 @@ async function getBaseUrl(): Promise<string> {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return 'https://docs.platphormnews.com'
+  return '${BASE_URL}'
 }
 
 function generateSlug(title: string): string {
@@ -770,7 +770,7 @@ async function handleToolCall(name: string, args: Record<string, unknown>): Prom
 
       // Fetch the URL
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'OpenDocs/1.0 (+https://docs.platphormnews.com)' },
+        headers: { 'User-Agent': 'OpenDocs/1.0 (+${BASE_URL})' },
       })
       if (!response.ok) throw new Error(`Failed to fetch URL: ${response.status}`)
 

@@ -1,3 +1,4 @@
+process.env.SESSION_SALT = 'test_salt'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock db module to avoid requiring DATABASE_URL — use vi.hoisted for the mock fn

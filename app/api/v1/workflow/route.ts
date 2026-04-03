@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
 import { generateSEOMetadata } from '@/lib/seo-generator'
 import { generateEmojiSummary, parseEmojiShortcodes } from '@/lib/emoji'
-import { SITE_NAME } from '@/lib/site-config'
+import {  SITE_NAME , BASE_URL } from '@/lib/site-config'
 
 /**
  * Workflow API - Async job processing and platform consumption
@@ -393,7 +393,7 @@ async function executeCrossPost(input: Record<string, unknown>, baseUrl: string)
               title: doc.title,
               content: doc.content,
               source_url: `${baseUrl}/docs/${doc.slug}`,
-              source_identifier: 'docs.platphormnews.com',
+              source_identifier: new URL(BASE_URL).hostname,
             },
           },
         }),
@@ -450,5 +450,5 @@ async function getBaseUrl(): Promise<string> {
     `
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return 'https://docs.platphormnews.com'
+  return BASE_URL
 }

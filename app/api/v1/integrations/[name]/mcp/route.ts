@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { apiResponse, apiError } from '@/lib/api-helpers'
+import { BASE_URL } from '@/lib/site-config'
+
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001'
 
@@ -32,7 +34,7 @@ export async function POST(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Forwarded-From': 'docs.platphormnews.com',
+        'X-Forwarded-From': new URL(BASE_URL).hostname,
       },
       body: JSON.stringify(body),
     })

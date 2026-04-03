@@ -1,3 +1,4 @@
+import { DocumentMeta } from "@/lib/seo-generator"
 import { NextResponse } from 'next/server'
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
@@ -40,12 +41,17 @@ const PROJECT_DOCS: Record<string, { file: string; description: string; category
   'coding':          { file: 'CODING.md',           description: 'Coding standards and development practices',          category: 'development'  },
 }
 
+const baseUrlSchema = z.string().url()
+
 async function getBaseUrl(): Promise<string> {
   try {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
-    if (result[0]?.value) return JSON.parse(result[0].value as string)
+    if (result[0]?.value) {
+      const parsed = JSON.parse(result[0].value as string)
+      return baseUrlSchema.parse(parsed)
+    }
   } catch { /* ignore */ }
-  return 'https://docs.platphormnews.com'
+  return BASE_URL
 }
 
 // Uses shared auto-name module for slug generation (see lib/auto-name.ts)
@@ -134,7 +140,7 @@ export function createMcpServer(): McpServer {
       const baseUrl = await getBaseUrl()
       const limit = Math.min(rawLimit ?? 20, 100)
       const offset = rawOffset ?? 0
-      const orderBy = sort === 'alphabetical' ? 'title ASC' : 'published_at DESC NULLS LAST'
+
 
       let docs: Document[]
       if (search) {
@@ -158,7 +164,7 @@ export function createMcpServer(): McpServer {
             AND deleted_at IS NULL AND status = 'published'
             ${category ? sql`AND category = ${category}` : sql``}
             ${tag ? sql`AND tags @> ${JSON.stringify([tag])}::jsonb` : sql``}
-          ORDER BY ${sql.unsafe(orderBy)}
+          ${sort === 'alphabetical' ? sql`ORDER BY title ASC` : sort === 'popular' ? sql`ORDER BY view_count DESC NULLS LAST` : sql`ORDER BY published_at DESC NULLS LAST`}
           LIMIT ${limit} OFFSET ${offset}
         ` as Document[]
       }
@@ -577,36 +583,103 @@ export function createMcpServer(): McpServer {
     async ({ documents, source_identifier = 'bulk-import', auto_publish = false }) => {
       const baseUrl = await getBaseUrl()
       const status = auto_publish ? 'published' : 'draft'
-      const results = []
-      for (const doc of documents) {
-        const slug = generateSimpleSlug(doc.title)
-        const seo = await generateSEOMetadata({ title: doc.title, slug, content: doc.content, category: doc.category, tags: doc.tags }, baseUrl)
-        const result = await sql`
-          INSERT INTO documents (
-            tenant_id, slug, title, content, content_format, category, tags, status,
-            source_identifier, og_title, og_description, reading_time_minutes, word_count, emoji_summary,
-            published_at
-          ) VALUES (
-            ${DEFAULT_TENANT_ID}, ${slug}, ${doc.title}, ${doc.content}, 'markdown',
-            ${doc.category || null}, ${JSON.stringify(doc.tags || [])}, ${status},
-            ${source_identifier}, ${seo.ogTitle}, ${seo.ogDescription},
-            ${seo.readingTimeMinutes}, ${seo.wordCount}, ${seo.emojiSummary},
-            ${status === 'published' ? sql`NOW()` : sql`NULL`}
-          )
-          ON CONFLICT (tenant_id, slug) DO NOTHING
-          RETURNING id, slug
-        `
-        if (result.length > 0) {
-          await sql`
-            INSERT INTO search_index (document_id, tenant_id, content_vector)
-            VALUES (${result[0].id}, ${DEFAULT_TENANT_ID}, to_tsvector('english', ${doc.title + ' ' + doc.content}))
-          `
-          results.push({ slug: result[0].slug, status: 'created' })
+      const results: { slug: string; status: string }[] = []
+
+      // 1. Parallel SEO generation with concurrency limit
+      const allPreparedDocs = []
+      const CHUNK_SIZE = 10
+      for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
+        const chunk = documents.slice(i, i + CHUNK_SIZE)
+        const chunkResults = await Promise.all(chunk.map(async (doc) => {
+          const slug = generateSimpleSlug(doc.title)
+          const seo = await generateSEOMetadata({ title: doc.title, slug, content: doc.content, category: doc.category, tags: doc.tags }, baseUrl)
+          return { doc, slug, seo }
+        }))
+        allPreparedDocs.push(...chunkResults)
+      }
+
+      if (allPreparedDocs.length === 0) return ok({ imported: 0, total: 0, results })
+
+      // De-duplicate within the batch to avoid ON CONFLICT issues with UNNEST
+      const seenSlugs = new Set<string>()
+      const preparedDocs = []
+      for (const p of allPreparedDocs) {
+        if (!seenSlugs.has(p.slug)) {
+          seenSlugs.add(p.slug)
+          preparedDocs.push(p)
         } else {
-          results.push({ slug, status: 'skipped (exists)' })
+          results.push({ slug: p.slug, status: 'skipped (duplicate in batch)' })
         }
       }
-      return ok({ imported: results.filter(r => r.status === 'created').length, total: documents.length, results })
+
+      // 2. Optimized Bulk INSERT into documents using UNNEST
+      const inserted = await sql`
+        INSERT INTO documents (
+          tenant_id, slug, title, content, content_format, category, tags, status,
+          source_identifier, og_title, og_description, reading_time_minutes, word_count, emoji_summary,
+          published_at
+        )
+        SELECT
+          u.tenant_id, u.slug, u.title, u.content, u.content_format, u.category, u.tags, u.status,
+          u.source_identifier, u.og_title, u.og_description, u.reading_time_minutes, u.word_count, u.emoji_summary,
+          CASE WHEN u.status = 'published' THEN NOW() ELSE NULL END
+        FROM UNNEST(
+          ${preparedDocs.map(() => DEFAULT_TENANT_ID)}::uuid[],
+          ${preparedDocs.map(d => d.slug)}::text[],
+          ${preparedDocs.map(d => d.doc.title)}::text[],
+          ${preparedDocs.map(d => d.doc.content)}::text[],
+          ${preparedDocs.map(() => 'markdown')}::text[],
+          ${preparedDocs.map(d => d.doc.category || null)}::text[],
+          ${preparedDocs.map(d => JSON.stringify(d.doc.tags || []))}::jsonb[],
+          ${preparedDocs.map(() => status)}::text[],
+          ${preparedDocs.map(() => source_identifier)}::text[],
+          ${preparedDocs.map(d => d.seo.ogTitle)}::text[],
+          ${preparedDocs.map(d => d.seo.ogDescription)}::text[],
+          ${preparedDocs.map(d => d.seo.readingTimeMinutes)}::int[],
+          ${preparedDocs.map(d => d.seo.wordCount)}::int[],
+          ${preparedDocs.map(d => d.seo.emojiSummary)}::text[]
+        ) AS u(
+          tenant_id, slug, title, content, content_format, category, tags, status,
+          source_identifier, og_title, og_description, reading_time_minutes, word_count, emoji_summary
+        )
+        ON CONFLICT (tenant_id, slug) DO NOTHING
+        RETURNING id, slug
+      `
+
+      // 3. Collect created documents for search indexing
+      const insertedMap = new Map(inserted.map(r => [r.slug, r.id]))
+      const searchIndexData: { id: string; content: string }[] = []
+
+      for (const p of preparedDocs) {
+        const docId = insertedMap.get(p.slug)
+        if (docId) {
+          searchIndexData.push({ id: docId, content: p.doc.title + ' ' + p.doc.content })
+          results.push({ slug: p.slug, status: 'created' })
+        } else {
+          results.push({ slug: p.slug, status: 'skipped (exists)' })
+        }
+      }
+
+      // 4. Optimized Bulk INSERT into search_index
+      if (searchIndexData.length > 0) {
+        await sql`
+          INSERT INTO search_index (document_id, tenant_id, content_vector)
+          SELECT
+            u.id,
+            ${DEFAULT_TENANT_ID},
+            to_tsvector('english', u.content)
+          FROM UNNEST(
+            ${searchIndexData.map(d => d.id)}::uuid[],
+            ${searchIndexData.map(d => d.content)}::text[]
+          ) AS u(id, content)
+        `
+      }
+
+      return ok({
+        imported: inserted.length,
+        total: documents.length,
+        results
+      })
     },
   )
 

@@ -98,8 +98,8 @@ export function generateSessionHash(fingerprint: string, ip: string): string {
   }
 
   return crypto
-    .createHash('sha256')
-    .update(`${fingerprint}:${ip}:${SESSION_SALT}`)
+    .createHmac('sha256', SESSION_SALT)
+    .update(`${fingerprint}:${ip}`)
     .digest('hex')
 }
 

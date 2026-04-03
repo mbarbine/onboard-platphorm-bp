@@ -3,12 +3,17 @@ import {
   getPaginationParams,
   generateSlug,
   hasScope,
+  generateApiKey,
 } from '@/lib/api-helpers'
 
 // Mock modules that depend on runtime
 vi.mock('@/lib/db', () => ({
   sql: vi.fn(),
   DEFAULT_TENANT_ID: '00000000-0000-0000-0000-000000000001',
+}))
+
+vi.mock('@/lib/site-config', () => ({
+  API_KEY_PREFIX: 'ob_',
 }))
 
 describe('getPaginationParams', () => {
@@ -119,5 +124,40 @@ describe('hasScope', () => {
 
   it('returns false for empty scopes', () => {
     expect(hasScope([], 'read')).toBe(false)
+  })
+})
+
+describe('generateApiKey', () => {
+  it('returns a key, hash, and prefix', () => {
+    const result = generateApiKey()
+    expect(result).toHaveProperty('key')
+    expect(result).toHaveProperty('hash')
+    expect(result).toHaveProperty('prefix')
+  })
+
+  it('generates a key with the correct prefix', () => {
+    const { key, prefix } = generateApiKey()
+    expect(key.startsWith('ob_')).toBe(true)
+    expect(prefix).toBe(key.slice(0, 10))
+  })
+
+  it('generates a valid SHA-256 hash of the key', () => {
+    const { key, hash } = generateApiKey()
+    const crypto = require('crypto')
+    const expectedHash = crypto.createHash('sha256').update(key).digest('hex')
+    expect(hash).toBe(expectedHash)
+  })
+
+  it('generates unique keys each call', () => {
+    const result1 = generateApiKey()
+    const result2 = generateApiKey()
+    expect(result1.key).not.toBe(result2.key)
+    expect(result1.hash).not.toBe(result2.hash)
+  })
+
+  it('generates keys of consistent length', () => {
+    const { key } = generateApiKey()
+    // Prefix 'ob_' (3) + 32 bytes hex (64) = 67 characters
+    expect(key.length).toBe(67)
   })
 })

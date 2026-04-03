@@ -28,6 +28,7 @@
  */
 
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest'
+import * as seoGenerator from '@/lib/seo-generator'
 import type { Client } from '@modelcontextprotocol/sdk/client/index.js'
 
 // ─── Hoisted mock factories ───────────────────────────────────────────────────
@@ -117,6 +118,7 @@ vi.mock('@/lib/db', () => ({
 }))
 vi.mock('@/lib/seo-generator', () => ({
   generateSEOMetadata: generateSEOMetadataMock,
+  updateDocumentSEOFromMeta: vi.fn().mockResolvedValue(true),
   updateDocumentSEO: updateDocumentSEOMock,
   updateAllDocumentsSEO: updateAllDocumentsSEOMock,
   generateAEOMetadata: vi.fn().mockReturnValue({
@@ -829,8 +831,12 @@ describe('🔄 regenerate_seo', () => {
     expect(updateDocumentSEOMock).toHaveBeenCalledWith('the-ultimate-taco-guide', expect.any(String))
   })
 
+
+
   it('regenerates all docs when slug="all"', async () => {
     updateDocumentSEOMock.mockClear()
+    vi.mocked(seoGenerator.updateDocumentSEOFromMeta).mockClear()
+
     // getBaseUrl() → auto | SELECT all slugs
     db([{ slug: 'taco-1' }, { slug: 'taco-2' }, { slug: 'taco-3' }], [], [], [])
     const result = await client.callTool({ name: 'regenerate_seo', arguments: { slug: 'all' } })

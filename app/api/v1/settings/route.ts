@@ -9,7 +9,7 @@ const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001'
 const DEFAULTS: Record<string, string> = {
   auto_approve_submissions: 'false',
   admin_password_hash: '""',
-  base_url: '"https://docs.platphormnews.com"',
+  base_url: JSON.stringify(BASE_URL),
   default_locale: '"en"',
   site_name: JSON.stringify(SITE_NAME),
   github_repo: JSON.stringify(GITHUB_REPO),

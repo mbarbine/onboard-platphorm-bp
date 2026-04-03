@@ -16,7 +16,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { BASE_URL } from '@/lib/site-config'
 import {
+
   FileText,
   Send,
   CheckCircle,
@@ -90,7 +92,7 @@ export default function SubmitPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [result, setResult] = useState<SubmissionResult | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
-  const [baseUrl, setBaseUrl] = useState('https://docs.platphormnews.com')
+  const [baseUrl, setBaseUrl] = useState(BASE_URL)
   const [session, setSession] = useState<SessionData | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [shareLinks, setShareLinks] = useState<ShareLink[]>([])

@@ -18,24 +18,24 @@ export default function DocumentNotFound() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2">
-            <Link href="/docs">
-              <Button variant="default" className="w-full gap-2">
+            <Button variant="default" className="w-full gap-2" asChild>
+              <Link href="/docs">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Documentation
-              </Button>
-            </Link>
-            <Link href="/search">
-              <Button variant="outline" className="w-full gap-2">
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <Link href="/search">
                 <Search className="h-4 w-4" />
                 Search Docs
-              </Button>
-            </Link>
-            <Link href="/submit">
-              <Button variant="outline" className="w-full gap-2">
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <Link href="/submit">
                 <BookOpen className="h-4 w-4" />
                 Submit Content
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
           <div className="text-xs text-center text-muted-foreground space-y-1">
             <p>Looking for something specific?</p>

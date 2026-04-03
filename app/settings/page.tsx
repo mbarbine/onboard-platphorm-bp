@@ -33,7 +33,7 @@ import {
   Copy
 } from 'lucide-react'
 import { locales, localeNames, type Locale } from '@/lib/i18n'
-import { SITE_NAME, GITHUB_REPO } from '@/lib/site-config'
+import {  SITE_NAME, GITHUB_REPO , BASE_URL } from '@/lib/site-config'
 
 interface Integration {
   id: string
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                         id="base_url"
                         value={settings?.base_url || ''}
                         onChange={(e) => updateSetting('base_url', e.target.value)}
-                        placeholder="https://docs.platphormnews.com"
+                        placeholder={BASE_URL}
                       />
                     </div>
                     

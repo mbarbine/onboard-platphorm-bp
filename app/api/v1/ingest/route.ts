@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
+import dns from 'dns/promises'
 import { v4 as uuidv4 } from 'uuid'
 import { generateSEOMetadata, generateAEOMetadata, generateGEOMetadata } from '@/lib/seo-generator'
 import { generateEmojiSummary } from '@/lib/emoji'
 import { generateSimpleSlug } from '@/lib/auto-name'
 import { logger } from '@/lib/logger'
-import { SITE_NAME } from '@/lib/site-config'
+import {  SITE_NAME , BASE_URL } from '@/lib/site-config'
 
 async function getBaseUrl(): Promise<string> {
   try {
     const result = await sql`SELECT value FROM settings WHERE tenant_id = ${DEFAULT_TENANT_ID} AND key = 'base_url'`
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
-  return 'https://docs.platphormnews.com'
+  return BASE_URL
 }
 
 function extractDomain(url: string): string {
@@ -238,8 +239,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Block private/internal IP ranges to prevent SSRF
+    // Block private/internal IP ranges to prevent SSRF via DNS rebinding / malicious resolution
     const hostname = parsedUrl.hostname.toLowerCase()
+
+    let resolvedIp = hostname
+    try {
+      const lookupResult = await dns.lookup(hostname)
+      resolvedIp = lookupResult.address
+    } catch {
+      // If DNS lookup fails, proceed and let fetch handle the resolution error,
+      // but still run patterns against the hostname.
+    }
+
     const blockedPatterns = [
       /^localhost$/,
       /^127\.\d+\.\d+\.\d+$/,
@@ -252,7 +263,10 @@ export async function POST(request: NextRequest) {
       /^metadata\.google\.internal$/,
     ]
 
-    if (blockedPatterns.some(pattern => pattern.test(hostname))) {
+    if (
+      blockedPatterns.some(pattern => pattern.test(hostname)) ||
+      blockedPatterns.some(pattern => pattern.test(resolvedIp))
+    ) {
       return NextResponse.json(
         { success: false, error: 'URLs pointing to internal or private networks are not allowed' },
         { status: 400 }
