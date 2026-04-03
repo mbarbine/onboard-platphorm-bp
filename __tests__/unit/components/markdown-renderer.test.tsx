@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen } from "@testing-library/react"
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { MarkdownRenderer } from '@/components/markdown-renderer'
 
 describe('MarkdownRenderer - URL Sanitization Fallback', () => {

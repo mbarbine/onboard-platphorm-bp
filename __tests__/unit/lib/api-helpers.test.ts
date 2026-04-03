@@ -13,7 +13,8 @@ vi.mock('@/lib/db', () => ({
 }))
 
 vi.mock('@/lib/site-config', () => ({
-  API_KEY_PREFIX: 'ob_',
+  API_KEY_PREFIX: "ob_",
+  SERVICE_NAME: "test-service"
 }))
 
 describe('getPaginationParams', () => {
