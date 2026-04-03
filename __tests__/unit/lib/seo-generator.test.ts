@@ -254,7 +254,7 @@ describe('generateShareLinks', () => {
   it('encodes title and URL in share links', () => {
     const links = generateShareLinks('Hello World', 'https://example.com/test')
     const twitter = links.find(l => l.platform === 'twitter')!
-    expect(twitter.url).toContain(encodeURIComponent('Hello World'))
+    expect(twitter.url).toContain(new URLSearchParams({ text: 'Hello World' }).toString().split('&')[0].split('=')[1])
     expect(twitter.url).toContain(encodeURIComponent('https://example.com/test'))
   })
 

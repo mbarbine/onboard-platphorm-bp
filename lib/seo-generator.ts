@@ -275,39 +275,35 @@ export function generateShareLinks(
   url: string,
   description?: string
 ): ShareLink[] {
-  const encodedTitle = encodeURIComponent(title)
-  const encodedUrl = encodeURIComponent(url)
-  const encodedDesc = encodeURIComponent(description || '')
-  
   return [
     {
       platform: 'twitter',
-      url: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      url: `https://twitter.com/intent/tweet?${new URLSearchParams({ text: title, url }).toString()}`,
       icon: '𝕏',
     },
     {
       platform: 'linkedin',
-      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      url: `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams({ url }).toString()}`,
       icon: '💼',
     },
     {
       platform: 'facebook',
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+      url: `https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({ u: url }).toString()}`,
       icon: '📘',
     },
     {
       platform: 'reddit',
-      url: `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+      url: `https://reddit.com/submit?${new URLSearchParams({ url, title }).toString()}`,
       icon: '🔴',
     },
     {
       platform: 'hackernews',
-      url: `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${encodedTitle}`,
+      url: `https://news.ycombinator.com/submitlink?${new URLSearchParams({ u: url, t: title }).toString()}`,
       icon: '🟧',
     },
     {
       platform: 'email',
-      url: `mailto:?subject=${encodedTitle}&body=${encodedDesc}%0A%0A${encodedUrl}`,
+      url: `mailto:?${new URLSearchParams({ subject: title, body: `${description || ''}\n\n${url}` }).toString().replace(/\+/g, '%20')}`,
       icon: '📧',
     },
     {

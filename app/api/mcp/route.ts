@@ -882,12 +882,12 @@ export function createMcpServer(): McpServer {
       const url = `${baseUrl}/docs/${slug}`
       return ok({
         slug, url, links: [
-          { platform: 'twitter',    url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(doc.title as string)}&url=${encodeURIComponent(url)}`,                              icon: '𝕏'  },
-          { platform: 'linkedin',   url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,                                                               icon: '💼' },
-          { platform: 'facebook',   url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,                                                                      icon: '📘' },
-          { platform: 'reddit',     url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(doc.title as string)}`,                                    icon: '🔴' },
-          { platform: 'hackernews', url: `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(doc.title as string)}`,                            icon: '🟧' },
-          { platform: 'email',      url: `mailto:?subject=${encodeURIComponent(doc.title as string)}&body=${encodeURIComponent((doc.description as string || '') + '\n\n' + url)}`,      icon: '📧' },
+          { platform: 'twitter',    url: `https://twitter.com/intent/tweet?${new URLSearchParams({ text: doc.title as string, url }).toString()}`, icon: '𝕏'  },
+          { platform: 'linkedin',   url: `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams({ url }).toString()}`, icon: '💼' },
+          { platform: 'facebook',   url: `https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({ u: url }).toString()}`, icon: '📘' },
+          { platform: 'reddit',     url: `https://reddit.com/submit?${new URLSearchParams({ url, title: doc.title as string }).toString()}`, icon: '🔴' },
+          { platform: 'hackernews', url: `https://news.ycombinator.com/submitlink?${new URLSearchParams({ u: url, t: doc.title as string }).toString()}`, icon: '🟧' },
+          { platform: 'email',      url: `mailto:?${new URLSearchParams({ subject: doc.title as string, body: `${doc.description as string || ''}\n\n${url}` }).toString().replace(/\+/g, '%20')}`, icon: '📧' },
         ],
       })
     },
