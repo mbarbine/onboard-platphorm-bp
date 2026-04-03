@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { MarkdownRenderer } from '@/components/markdown-renderer'
 
 describe('MarkdownRenderer - URL Sanitization Fallback', () => {
@@ -41,7 +41,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('sanitizes data:text/html URLs in fallback mode', () => {
-    const content = '[Click me](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTs8L3NjcmlwdD4=)'
+    const content = '[Click me](data:text/html,<script>alert(1)</script>)'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Click me')
@@ -49,7 +49,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('sanitizes data:text/javascript URLs in fallback mode', () => {
-    const content = '[Click me](data:text/javascript;base64,YWxlcnQoMSk7)'
+    const content = '[Click me](data:text/javascript,alert(1))'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Click me')
@@ -57,7 +57,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('sanitizes data:image/svg+xml URLs in fallback mode', () => {
-    const content = '[Click me](data:image/svg+xml;base64,PHN2ZyB4bWxucz0...)'
+    const content = '[Click me](data:image/svg+xml,<svg><script>alert(1)</script></svg>)'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Click me')
@@ -65,7 +65,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('sanitizes data:application/xhtml+xml URLs in fallback mode', () => {
-    const content = '[Click me](data:application/xhtml+xml;base64,PHhodG1s...)'
+    const content = '[Click me](data:application/xhtml+xml,<html xmlns="http://www.w3.org/1999/xhtml"><script>alert(1)</script></html>)'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Click me')
@@ -73,7 +73,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('sanitizes data:application/xml URLs in fallback mode', () => {
-    const content = '[Click me](data:application/xml;base64,PHhtb...)'
+    const content = '[Click me](data:application/xml,<root><script>alert(1)</script></root>)'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Click me')
@@ -81,11 +81,11 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
   })
 
   it('allows safe data:image/png URLs in fallback mode', () => {
-    const content = '[Safe Image](data:image/png;base64,iVBORw0KGgo...)'
+    const content = '[Safe Image](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==)'
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Safe Image')
-    expect(link.getAttribute('href')).toBeNull() // DOMPurify strips data URIs from href
+    expect(link.getAttribute('href')).toBeNull() // DOMPurify strips data urls for hrefs entirely as a precaution
   })
 
   it('allows http URLs', () => {
