@@ -57,28 +57,30 @@ export async function GET(request: NextRequest) {
   
   const baseUrl = BASE_URL
   
-  const docs: DocMetadata[] = []
-  
-  for (const file of DOC_FILES) {
+  const docsPromises = DOC_FILES.map(async (file) => {
     const filePath = path.join(DOCS_DIR, file)
     try {
       await fs.access(filePath)
       const slug = file.replace('.md', '').toLowerCase()
       const meta = DOC_METADATA[file] || { description: '', category: 'other' }
       
-      if (category && meta.category !== category) continue
+      if (category && meta.category !== category) return null
       
-      docs.push({
+      return {
         name: file,
         slug,
         path: `/${file}`,
         url: `${baseUrl}/api/v1/docs/${slug}`,
         ...meta,
-      })
+      }
     } catch {
       // File doesn't exist, skip
+      return null
     }
-  }
+  })
+
+  const results = await Promise.all(docsPromises)
+  const docs: DocMetadata[] = results.filter((doc): doc is NonNullable<typeof doc> => doc !== null)
   
   if (format === 'text') {
     const text = docs.map(d => `${d.name}: ${d.url}`).join('\n')
