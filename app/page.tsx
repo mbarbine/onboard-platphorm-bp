@@ -181,24 +181,24 @@ export default async function HomePage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/docs">
-            <Button size="lg" className="gap-2">
+          <Button size="lg" className="gap-2" asChild>
+            <Link href="/docs">
               <Book className="h-4 w-4" />
               Browse Docs
-            </Button>
-          </Link>
-          <Link href="/docs/api">
-            <Button variant="outline" size="lg" className="gap-2">
+            </Link>
+          </Button>
+          <Button variant="outline" size="lg" className="gap-2" asChild>
+            <Link href="/docs/api">
               <Code className="h-4 w-4" />
               API Reference
-            </Button>
-          </Link>
-          <Link href="/submit">
-            <Button variant="outline" size="lg" className="gap-2">
+            </Link>
+          </Button>
+          <Button variant="outline" size="lg" className="gap-2" asChild>
+            <Link href="/submit">
               <FileText className="h-4 w-4" />
               Submit Content
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -272,12 +272,12 @@ export default async function HomePage() {
         <div className="my-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Recent Documentation</h2>
-            <Link href="/docs">
-              <Button variant="ghost" className="gap-1">
+            <Button variant="ghost" className="gap-1" asChild>
+              <Link href="/docs">
                 View all
                 <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             {recentDocs.map((doc) => (
@@ -339,16 +339,16 @@ curl "${baseUrl}/api/v1/documents" \\
   -H "Authorization: Bearer your_api_key"`}</pre>
           </div>
           <div className="flex gap-3">
-            <Link href="/docs/mcp">
-              <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/docs/mcp">
                 MCP Documentation
-              </Button>
-            </Link>
-            <Link href="/docs/api">
-              <Button variant="outline" size="sm">
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/docs/api">
                 API Reference
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -366,22 +366,22 @@ curl "${baseUrl}/api/v1/documents" \\
             </div>
           </div>
           <div className="flex gap-2">
-            <Link href={githubRepo} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" asChild>
+              <Link href={githubRepo} target="_blank" rel="noopener noreferrer">
                 <Github className="h-4 w-4" />
                 Clone Repo
-              </Button>
-            </Link>
-            <Link 
-              href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent(githubRepo)}`}
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <Button className="gap-2">
+              </Link>
+            </Button>
+            <Button className="gap-2" asChild>
+              <Link
+                href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent(githubRepo)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Deploy to Vercel
                 <ExternalLink className="h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -392,13 +392,13 @@ curl "${baseUrl}/api/v1/documents" \\
         <p className="text-muted-foreground">
           Submit your documentation, blog posts, or tutorials from any source.
         </p>
-        <Link href="/submit">
-          <Button size="lg" className="gap-2">
+        <Button size="lg" className="gap-2" asChild>
+          <Link href="/submit">
             <FileText className="h-4 w-4" />
             Submit Content
             <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </DocsLayout>
   )
