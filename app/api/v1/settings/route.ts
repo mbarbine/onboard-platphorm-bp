@@ -134,8 +134,8 @@ export async function PUT(request: NextRequest) {
     
     // Update integrations
     if (integrations && Array.isArray(integrations)) {
-      for (const integration of integrations) {
-        await sql`
+      await Promise.all(
+        integrations.map(integration => sql`
           UPDATE integrations 
           SET base_url = ${integration.base_url},
               api_path = ${integration.api_path || '/api'},
@@ -144,8 +144,8 @@ export async function PUT(request: NextRequest) {
               settings = ${JSON.stringify(integration.settings || {})},
               updated_at = NOW()
           WHERE id = ${integration.id} AND tenant_id = ${DEFAULT_TENANT}
-        `
-      }
+        `)
+      )
     }
     
     return NextResponse.json({
