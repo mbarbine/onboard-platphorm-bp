@@ -4,6 +4,7 @@ import {
   generateSlug,
   hasScope,
   generateApiKey,
+  apiError,
 } from '@/lib/api-helpers'
 
 // Mock modules that depend on runtime
@@ -14,6 +15,7 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/lib/site-config', () => ({
   API_KEY_PREFIX: 'ob_',
+  SERVICE_NAME: 'onboard',
 }))
 
 describe('getPaginationParams', () => {
@@ -159,5 +161,33 @@ describe('generateApiKey', () => {
     const { key } = generateApiKey()
     // Prefix 'ob_' (3) + 32 bytes hex (64) = 67 characters
     expect(key.length).toBe(67)
+  })
+})
+
+describe('apiError', () => {
+  it('formats a basic error with default status 400', async () => {
+    const response = apiError('TEST_ERROR', 'A test error occurred')
+    expect(response.status).toBe(400)
+
+    const data = await response.json()
+    expect(data.success).toBe(false)
+    expect(data.error.code).toBe('TEST_ERROR')
+    expect(data.error.message).toBe('A test error occurred')
+    expect(data.error.details).toBeUndefined()
+    expect(data.meta.request_id).toBeDefined()
+    expect(typeof data.meta.request_id).toBe('string')
+  })
+
+  it('accepts a custom status code', async () => {
+    const response = apiError('NOT_FOUND', 'Resource not found', 404)
+    expect(response.status).toBe(404)
+  })
+
+  it('includes details when provided', async () => {
+    const details = { field: 'email', issue: 'invalid' }
+    const response = apiError('VALIDATION_ERROR', 'Invalid input', 422, details)
+
+    const data = await response.json()
+    expect(data.error.details).toEqual(details)
   })
 })
