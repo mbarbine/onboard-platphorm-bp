@@ -4,6 +4,8 @@
  * Run with: npx tsx scripts/test-api.ts
  */
 
+import { logger } from '@/lib/logger'
+
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 interface TestResult {
@@ -20,7 +22,7 @@ async function runTest(name: string, fn: () => Promise<void>) {
   try {
     await fn()
     results.push({ name, passed: true, duration: Date.now() - start })
-    console.log(`✅ ${name}`)
+    logger.info(`✅ ${name}`)
   } catch (error) {
     results.push({ 
       name, 
@@ -28,7 +30,7 @@ async function runTest(name: string, fn: () => Promise<void>) {
       error: error instanceof Error ? error.message : String(error),
       duration: Date.now() - start 
     })
-    console.log(`❌ ${name}: ${error instanceof Error ? error.message : error}`)
+    logger.error(`❌ ${name}`, { error: error instanceof Error ? error : String(error) })
   }
 }
 
@@ -251,8 +253,8 @@ async function testAPIDocsEndpoint() {
 }
 
 async function main() {
-  console.log('\n🧪 Onboard API Integration Tests\n')
-  console.log(`Testing: ${BASE_URL}\n`)
+  logger.info('\n🧪 Onboard API Integration Tests\n')
+  logger.info(`Testing: ${BASE_URL}\n`)
 
   // Health & Discovery
   await runTest('Health endpoint returns healthy status', testHealthEndpoint)
@@ -293,20 +295,20 @@ async function main() {
   await runTest('API docs endpoint returns OpenAPI spec', testAPIDocsEndpoint)
 
   // Summary
-  console.log('\n' + '='.repeat(50))
+  logger.info('\n' + '='.repeat(50))
   const passed = results.filter(r => r.passed).length
   const failed = results.filter(r => !r.passed).length
-  console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`)
+  logger.info(`\n📊 Results: ${passed} passed, ${failed} failed\n`)
   
   if (failed > 0) {
-    console.log('❌ Failed tests:')
+    logger.error('❌ Failed tests:')
     results.filter(r => !r.passed).forEach(r => {
-      console.log(`   - ${r.name}: ${r.error}`)
+      logger.error(`   - ${r.name}: ${r.error}`)
     })
     process.exit(1)
   }
   
-  console.log('✅ All tests passed!\n')
+  logger.info('✅ All tests passed!\n')
 }
 
-main().catch(console.error)
+main().catch((err) => logger.error('Unhandled error', { error: err instanceof Error ? err : String(err) }))

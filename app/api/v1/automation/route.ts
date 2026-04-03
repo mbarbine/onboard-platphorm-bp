@@ -1,3 +1,4 @@
+import logger from "@/lib/logger"
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
 import { generateSEOMetadata, generateShareLinks, generateStructuredData } from '@/lib/seo-generator'
@@ -89,7 +90,7 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
         title: doc.title as string,
         description: doc.description as string || '',
         content: doc.content as string,
-        slug: doc.slug as string,
+        slug: String(doc.slug) as string,
         category: doc.category as string,
       }, baseUrl)
 
@@ -105,7 +106,7 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
         WHERE id = ${doc.id}
       `
 
-      results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+      results.push({ id: String(doc.id), slug: String(doc.slug), status: 'updated' })
     }))
   }
 
@@ -325,7 +326,7 @@ async function handleEmojiSummaries(params: { document_ids?: string[], all?: boo
       WHERE id = ${doc.id}
     `
 
-    results.push({ id: doc.id, emoji_summary: summary.emojis })
+    results.push({ id: String(doc.id), emoji_summary: summary.emojis })
   }
 
   return NextResponse.json({

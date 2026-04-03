@@ -171,7 +171,7 @@ vi.mock('fs', () => ({
 }))
 
 // ─── Real server factory (imported AFTER mocks so deps are intercepted) ───────
-// eslint-disable-next-line import/order
+
 import { createMcpServer } from '@/app/api/mcp/route'
 
 // ─── Shared MCP client ────────────────────────────────────────────────────────
