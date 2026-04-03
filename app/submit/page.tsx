@@ -127,7 +127,11 @@ export default function SubmitPage() {
           setCategories([])
         }
       })
-      .catch((err) => { console.error('Failed to fetch categories:', err); setCategories([]) })
+      .catch((err) => {
+        console.error('Failed to fetch categories:', err);
+        setCategories([]);
+        setResult({ success: false, error: { message: 'Failed to load categories. Please try refreshing the page.' } });
+      })
   }, [])
 
   // Initialize session and load draft
