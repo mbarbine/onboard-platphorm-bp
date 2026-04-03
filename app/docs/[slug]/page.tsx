@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { getCategories } from '@/lib/data'
 import { extractFAQFromContent } from '@/lib/seo-generator'
 import {  SITE_NAME, ORG_NAME , BASE_URL } from '@/lib/site-config'
 import { DocsLayout } from '@/components/docs-layout'
@@ -31,21 +32,6 @@ async function getBaseUrl(): Promise<string> {
     if (result[0]?.value) return JSON.parse(result[0].value as string)
   } catch { /* ignore */ }
   return BASE_URL
-}
-
-async function getCategories(): Promise<(Category & { document_count: number })[]> {
-  try {
-    const categories = await sql`
-      SELECT c.*, 
-        (SELECT COUNT(*)::int FROM documents d WHERE d.category = c.slug AND d.deleted_at IS NULL AND d.status = 'published') as document_count
-      FROM categories c
-      WHERE c.tenant_id = ${DEFAULT_TENANT_ID}
-      ORDER BY c.order_index ASC, c.name ASC
-    ` as (Category & { document_count: number })[]
-    return categories
-  } catch {
-    return []
-  }
 }
 
 async function getDocument(slug: string): Promise<Document | null> {
@@ -261,12 +247,12 @@ export default async function DocumentPage({ params }: PageProps) {
 
       {/* Back link */}
       <div className="mb-6">
-        <Link href="/docs">
-          <Button variant="ghost" size="sm" className="gap-1 -ml-2">
+        <Button variant="ghost" size="sm" className="gap-1 -ml-2" asChild>
+          <Link href="/docs">
             <ChevronLeft className="h-4 w-4" />
             Back to docs
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       {/* Article header */}

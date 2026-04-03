@@ -213,6 +213,20 @@ describe('parseMarkdown', () => {
     }
   })
 
+  it('gracefully handles malformed URIs without throwing errors', () => {
+    const malformedUrls = [
+      '%',
+      '%2',
+      '%2G',
+      'https://example.com/%E0%A4%A',
+      'foo%81'
+    ]
+
+    for (const url of malformedUrls) {
+      expect(() => parseMarkdown(`[malformed](${url})`)).not.toThrow()
+    }
+  })
+
   it('handles empty markdown', () => {
     expect(parseMarkdown('')).toBe('')
   })

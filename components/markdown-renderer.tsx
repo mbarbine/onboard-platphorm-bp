@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import DOMPurify from 'isomorphic-dompurify'
 import { cn } from '@/lib/utils'
 import { Check, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -299,10 +300,16 @@ function TableOfContents({ items }: { items: TOCItem[] }) {
 }
 
 export function MarkdownRenderer({ content, className, showTableOfContents = false }: MarkdownRendererProps) {
-  const { html, toc } = useMemo(() => ({
-    html: parseMarkdown(content),
-    toc: extractTOC(content),
-  }), [content])
+  const { html, toc } = useMemo(() => {
+    const rawHtml = parseMarkdown(content)
+    return {
+      html: DOMPurify.sanitize(rawHtml, {
+        ADD_TAGS: ['svg', 'path'],
+        ADD_ATTR: ['stroke-linecap', 'stroke-linejoin', 'stroke-width', 'd']
+      }),
+      toc: extractTOC(content),
+    }
+  }, [content])
 
   return (
     <>

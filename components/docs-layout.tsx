@@ -167,8 +167,11 @@ function SearchCommand() {
       variant="outline"
       className="relative h-9 w-full justify-start text-sm text-muted-foreground sm:w-64"
       onClick={() => setOpen(true)}
+      aria-label="Open search dialog"
+      aria-haspopup="dialog"
+      aria-expanded={open}
     >
-      <Search className="mr-2 h-4 w-4" />
+      <Search className="mr-2 h-4 w-4" aria-hidden="true" />
       <span className="hidden sm:inline">Search docs...</span>
       <span className="inline sm:hidden">Search...</span>
       <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium opacity-100 sm:flex">
@@ -328,20 +331,20 @@ export function DocsLayout({ children, categories }: DocsLayoutProps) {
             <div className="hidden md:flex">
               <SearchCommand />
             </div>
-            <Link href="/search" className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="md:hidden" asChild>
+              <Link href="/search">
+                <Search className="h-5 w-5" aria-hidden="true" />
                 <span className="sr-only">Search</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href={GITHUB_REPO} target="_blank" rel="noopener">
-                  <Button variant="ghost" size="icon">
-                    <Github className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href={GITHUB_REPO} target="_blank" rel="noopener">
+                    <Github className="h-5 w-5" aria-hidden="true" />
                     <span className="sr-only">Clone on GitHub</span>
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>Clone this repo on GitHub</TooltipContent>
             </Tooltip>

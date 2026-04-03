@@ -18,24 +18,24 @@ export default function NotFound() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-2">
-            <Link href="/">
-              <Button variant="default" className="w-full gap-2">
+            <Button variant="default" className="w-full gap-2" asChild>
+              <Link href="/">
                 <Home className="h-4 w-4" />
                 Go to Home
-              </Button>
-            </Link>
-            <Link href="/docs">
-              <Button variant="outline" className="w-full gap-2">
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <Link href="/docs">
                 <Book className="h-4 w-4" />
                 Browse Documentation
-              </Button>
-            </Link>
-            <Link href="/search">
-              <Button variant="outline" className="w-full gap-2">
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full gap-2" asChild>
+              <Link href="/search">
                 <Search className="h-4 w-4" />
                 Search Docs
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
           <p className="text-xs text-center text-muted-foreground">
             If you believe this is an error, please check the URL or contact support.
