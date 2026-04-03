@@ -199,12 +199,12 @@ export default function SubmitPage() {
       const title = formData.title || 'New Document'
       
       setShareLinks([
-        { platform: 'twitter', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, icon: '𝕏' },
-        { platform: 'linkedin', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, icon: '💼' },
-        { platform: 'facebook', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, icon: '📘' },
-        { platform: 'reddit', url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, icon: '🔴' },
-        { platform: 'hackernews', url: `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(title)}`, icon: '🟧' },
-        { platform: 'email', url: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(formData.description || 'Check this out!')}\n\n${encodeURIComponent(url)}`, icon: '📧' },
+        { platform: 'twitter', url: `https://twitter.com/intent/tweet?${new URLSearchParams({ text: title, url }).toString()}`, icon: '𝕏' },
+        { platform: 'linkedin', url: `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams({ url }).toString()}`, icon: '💼' },
+        { platform: 'facebook', url: `https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({ u: url }).toString()}`, icon: '📘' },
+        { platform: 'reddit', url: `https://reddit.com/submit?${new URLSearchParams({ url, title }).toString()}`, icon: '🔴' },
+        { platform: 'hackernews', url: `https://news.ycombinator.com/submitlink?${new URLSearchParams({ u: url, t: title }).toString()}`, icon: '🟧' },
+        { platform: 'email', url: `mailto:?${new URLSearchParams({ subject: title, body: `${formData.description || 'Check this out!'}\n\n${url}` }).toString().replace(/\+/g, '%20')}`, icon: '📧' },
       ])
     }
   }, [result, baseUrl, formData.title, formData.description])
