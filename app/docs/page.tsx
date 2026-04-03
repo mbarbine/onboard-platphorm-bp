@@ -1,4 +1,5 @@
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { getCategories } from '@/lib/data'
 import { DocsLayout } from '@/components/docs-layout'
 import { DocsListClient } from '@/components/docs-list-client'
 
@@ -7,21 +8,6 @@ export const dynamic = 'force-dynamic'
 export const metadata = {
   title: 'Documentation',
   description: 'Browse all published documentation pages, organized by category. Find guides, API references, tutorials, and more.',
-}
-
-async function getCategories(): Promise<(Category & { document_count: number })[]> {
-  try {
-    const categories = await sql`
-      SELECT c.*, 
-        (SELECT COUNT(*)::int FROM documents d WHERE d.category = c.slug AND d.deleted_at IS NULL AND d.status = 'published') as document_count
-      FROM categories c
-      WHERE c.tenant_id = ${DEFAULT_TENANT_ID}
-      ORDER BY c.order_index ASC, c.name ASC
-    ` as (Category & { document_count: number })[]
-    return categories
-  } catch {
-    return []
-  }
 }
 
 async function getDocuments(): Promise<Document[]> {

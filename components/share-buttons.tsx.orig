@@ -58,6 +58,12 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
       url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
       color: 'hover:bg-orange-600 hover:text-white',
     },
+    {
+      name: 'Hacker News',
+      icon: '🟧',
+      url: `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(title)}`,
+      color: 'hover:bg-orange-500 hover:text-white',
+    },
   ]
 
   const copyToClipboard = async () => {
@@ -124,7 +130,7 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
     <TooltipProvider delayDuration={300}>
       <div className="flex items-center gap-1 flex-wrap">
         <span className="text-sm text-muted-foreground mr-1">Share:</span>
-        
+
         {shareLinks.map((link) => (
           <Tooltip key={link.name}>
             <TooltipTrigger asChild>
@@ -147,7 +153,7 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
             <TooltipContent>Share on {link.name}</TooltipContent>
           </Tooltip>
         ))}
-        
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -163,7 +169,7 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
           </TooltipTrigger>
           <TooltipContent>Share via email</TooltipContent>
         </Tooltip>
-        
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -192,6 +198,7 @@ export function ShareDialog({ url, title, description = '' }: ShareButtonsProps)
     { name: 'LinkedIn', icon: '💼', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
     { name: 'Facebook', icon: '📘', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}` },
     { name: 'Reddit', icon: '🔴', url: `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}` },
+    { name: 'Hacker News', icon: '🟧', url: `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(title)}` },
     { name: 'WhatsApp', icon: '💬', url: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}` },
     { name: 'Telegram', icon: '📨', url: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}` },
   ]
@@ -223,7 +230,7 @@ export function ShareDialog({ url, title, description = '' }: ShareButtonsProps)
           </Button>
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Share on</label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
