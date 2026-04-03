@@ -85,7 +85,7 @@ describe('MarkdownRenderer - URL Sanitization Fallback', () => {
     render(<MarkdownRenderer content={content} />)
 
     const link = screen.getByText('Safe Image')
-    expect(link.getAttribute('href')).toBe('data:image/png;base64,iVBORw0KGgo...')
+    expect(link.getAttribute('href')).toBeNull() // DOMPurify strips data URIs from href
   })
 
   it('allows http URLs', () => {
