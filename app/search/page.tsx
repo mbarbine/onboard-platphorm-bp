@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { sql, DEFAULT_TENANT_ID, Document, Category } from '@/lib/db'
+import { getCategories } from '@/lib/data'
 import { DocsLayout } from '@/components/docs-layout'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,21 +17,6 @@ interface SearchPageProps {
 export const metadata = {
   title: 'Search',
   description: `Search across all ${SITE_NAME} documentation. Find guides, API references, tutorials, and community-contributed content using full-text search.`,
-}
-
-async function getCategories(): Promise<(Category & { document_count: number })[]> {
-  try {
-    const categories = await sql`
-      SELECT c.*, 
-        (SELECT COUNT(*)::int FROM documents d WHERE d.category = c.slug AND d.deleted_at IS NULL AND d.status = 'published') as document_count
-      FROM categories c
-      WHERE c.tenant_id = ${DEFAULT_TENANT_ID}
-      ORDER BY c.order_index ASC, c.name ASC
-    ` as (Category & { document_count: number })[]
-    return categories
-  } catch {
-    return []
-  }
 }
 
 async function searchDocuments(query: string, page: number = 1) {

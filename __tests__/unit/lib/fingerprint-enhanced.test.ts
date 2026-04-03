@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+vi.mock('@/lib/site-config', () => ({ SESSION_SALT: 'test-salt-for-tests' }))
 
 // Mock db module to avoid requiring DATABASE_URL — use vi.hoisted for the mock fn
 const { mockSql } = vi.hoisted(() => ({
