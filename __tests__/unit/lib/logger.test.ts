@@ -177,4 +177,36 @@ describe('getRequestContext', () => {
     expect(ctx.ip).toBeUndefined()
     expect(ctx.country).toBeUndefined()
   })
+
+  it('extracts first IP when x-forwarded-for contains multiple IPs', () => {
+    const request = new Request('https://example.com/api/test', {
+      headers: {
+        'x-forwarded-for': '1.2.3.4, 5.6.7.8, 9.10.11.12',
+      },
+    })
+    const ctx = getRequestContext(request)
+    expect(ctx.ip).toBe('1.2.3.4')
+  })
+
+  it('falls back to x-real-ip when x-forwarded-for is missing', () => {
+    const request = new Request('https://example.com/api/test', {
+      headers: {
+        'x-real-ip': '5.6.7.8',
+      },
+    })
+    const ctx = getRequestContext(request)
+    expect(ctx.ip).toBe('5.6.7.8')
+  })
+
+  it('extracts region and city from Vercel headers', () => {
+    const request = new Request('https://example.com/api/test', {
+      headers: {
+        'x-vercel-ip-country-region': 'CA',
+        'x-vercel-ip-city': 'San Francisco',
+      },
+    })
+    const ctx = getRequestContext(request)
+    expect(ctx.region).toBe('CA')
+    expect(ctx.city).toBe('San Francisco')
+  })
 })
