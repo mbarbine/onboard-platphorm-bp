@@ -299,26 +299,59 @@ async function executeSEORefresh(input: Record<string, unknown>, baseUrl: string
     throw new Error('Provide document_ids, category, or set all=true')
   }
 
-  let updated = 0
-  for (const doc of documents) {
-    const seo = await generateSEOMetadata({
-      title: doc.title as string,
-      description: doc.description as string || '',
-      content: doc.content as string,
-      slug: doc.slug as string,
-      category: doc.category as string,
-    }, baseUrl)
+  const CHUNK_SIZE = 10
+  const seoUpdates = []
+
+  for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
+    const chunk = documents.slice(i, i + CHUNK_SIZE)
+    const chunkUpdates = await Promise.all(
+      chunk.map(async (doc) => {
+        const seo = await generateSEOMetadata({
+          title: doc.title as string,
+          description: doc.description as string || '',
+          content: doc.content as string,
+          slug: doc.slug as string,
+          category: doc.category as string,
+        }, baseUrl)
+        return { id: doc.id, seo }
+      })
+    )
+    seoUpdates.push(...chunkUpdates)
+  }
+
+  if (seoUpdates.length > 0) {
+    const ids = seoUpdates.map(u => u.id as string)
+    const ogTitles = seoUpdates.map(u => u.seo.ogTitle)
+    const ogDescriptions = seoUpdates.map(u => u.seo.ogDescription)
+    const ogImages = seoUpdates.map(u => u.seo.ogImage)
+    const canonicalUrls = seoUpdates.map(u => u.seo.canonicalUrl)
+    const readingTimes = seoUpdates.map(u => u.seo.readingTimeMinutes)
+    const wordCounts = seoUpdates.map(u => u.seo.wordCount)
 
     await sql`
-      UPDATE documents SET
-        og_title = ${seo.ogTitle}, og_description = ${seo.ogDescription},
-        og_image = ${seo.ogImage}, canonical_url = ${seo.canonicalUrl},
-        reading_time_minutes = ${seo.readingTimeMinutes}, word_count = ${seo.wordCount},
+      UPDATE documents AS d
+      SET
+        og_title = u.og_title,
+        og_description = u.og_description,
+        og_image = u.og_image,
+        canonical_url = u.canonical_url,
+        reading_time_minutes = u.reading_time_minutes,
+        word_count = u.word_count,
         updated_at = NOW()
-      WHERE id = ${doc.id}
+      FROM UNNEST(
+        ${ids}::uuid[],
+        ${ogTitles}::text[],
+        ${ogDescriptions}::text[],
+        ${ogImages}::text[],
+        ${canonicalUrls}::text[],
+        ${readingTimes}::int[],
+        ${wordCounts}::int[]
+      ) AS u(id, og_title, og_description, og_image, canonical_url, reading_time_minutes, word_count)
+      WHERE d.id = u.id
     `
-    updated++
   }
+
+  const updated = documents.length
 
   return { updated }
 }
