@@ -6,17 +6,10 @@ import { neon } from '@neondatabase/serverless'
 type InternalClient = ReturnType<typeof neon>
 let _client: InternalClient | null = null
 
-export class DatabaseConfigurationError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'DatabaseConfigurationError'
-  }
-}
-
 function getClient(): InternalClient {
   if (!_client) {
     const url = process.env.DATABASE_URL
-    if (!url) throw new DatabaseConfigurationError('DATABASE_URL environment variable is not set')
+    if (!url) throw new Error('DATABASE_URL environment variable is not set')
     _client = neon(url)
   }
   return _client
