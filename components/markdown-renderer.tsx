@@ -305,7 +305,7 @@ export function MarkdownRenderer({ content, className, showTableOfContents = fal
     return {
       html: DOMPurify.sanitize(rawHtml, {
         ADD_TAGS: ['svg', 'path'],
-        ADD_ATTR: ['stroke-linecap', 'stroke-linejoin', 'stroke-width', 'd']
+        ADD_ATTR: ['stroke-linecap', 'stroke-linejoin', 'stroke-width', 'd', 'target']
       }),
       toc: extractTOC(content),
     }
