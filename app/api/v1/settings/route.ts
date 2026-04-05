@@ -109,15 +109,19 @@ export async function PUT(request: NextRequest) {
     
     // Update settings
     if (settings) {
-      for (const [key, value] of Object.entries(settings)) {
-        if (key === 'password_is_set') continue
+      const entries = Object.entries(settings).filter(([k]) => k !== 'password_is_set');
+
+      if (entries.length > 0) {
+        const keys = entries.map(([k]) => k);
+        const values = entries.map(([, v]) => JSON.stringify(v));
+        const tenantIds = Array(keys.length).fill(DEFAULT_TENANT);
         
         await sql`
           INSERT INTO settings (tenant_id, key, value, updated_at)
-          VALUES (${DEFAULT_TENANT}, ${key}, ${JSON.stringify(value)}, NOW())
+          SELECT * FROM UNNEST(${tenantIds}::uuid[], ${keys}::text[], ${values}::jsonb[], ARRAY(SELECT NOW() FROM generate_series(1, array_length(${keys}::text[], 1)))::timestamp[])
           ON CONFLICT (tenant_id, key) 
-          DO UPDATE SET value = ${JSON.stringify(value)}, updated_at = NOW()
-        `
+          DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+        `;
       }
     }
     
