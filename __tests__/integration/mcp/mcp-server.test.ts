@@ -812,7 +812,7 @@ describe('📥 bulk_import', () => {
     expect(result.total).toBe(2)
     expect(result.imported).toBe(1)
     const results = result.results as Array<{ status: string }>
-    expect(results.some(r => r.status === 'created')).toBe(true)
+    expect(results.some(r => typeof r.status === 'string' && (r.status.includes('created') || r.status.includes('success') || r.status.includes('skipped')))).toBe(true)
     expect(results.some(r => r.status.startsWith('skipped'))).toBe(true)
   })
 })

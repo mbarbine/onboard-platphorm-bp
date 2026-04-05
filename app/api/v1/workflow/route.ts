@@ -366,16 +366,14 @@ async function executeCrossPost(input: Record<string, unknown>, baseUrl: string)
   if (!docs.length) throw new Error('Document not found')
   const doc = docs[0]
 
-  const results = []
-  for (const target of targets) {
+  const promises = targets.map(async (target) => {
     const integration = await sql`
       SELECT * FROM integrations
       WHERE tenant_id = ${DEFAULT_TENANT_ID} AND name = ${target} AND enabled = true
     `
     
     if (!integration.length) {
-      results.push({ target, status: 'skipped', reason: 'Integration not found or disabled' })
-      continue
+      return { target, status: 'skipped', reason: 'Integration not found or disabled' }
     }
 
     try {
@@ -399,19 +397,21 @@ async function executeCrossPost(input: Record<string, unknown>, baseUrl: string)
         }),
       })
 
-      results.push({
+      return {
         target,
         status: response.ok ? 'success' : 'failed',
         response_status: response.status,
-      })
+      }
     } catch (error) {
-      results.push({
+      return {
         target,
         status: 'error',
         error: error instanceof Error ? error.message : 'Unknown error',
-      })
+      }
     }
-  }
+  })
+
+  const results = await Promise.all(promises)
 
   return { document_id, cross_posts: results }
 }
