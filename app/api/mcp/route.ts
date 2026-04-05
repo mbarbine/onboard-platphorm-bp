@@ -800,20 +800,28 @@ export function createMcpServer(): McpServer {
           AND events @> ${JSON.stringify([event])}::jsonb
       `
       const payload = { event, timestamp: new Date().toISOString(), data: slug ? { slug } : {} }
-      const results = []
-      for (const wh of webhooks) {
-        try {
-          assertExternalUrl(wh.url as string)
-          const signature = crypto.createHmac('sha256', wh.secret as string).update(JSON.stringify(payload)).digest('hex')
-          const resp = await fetchWithTimeout(wh.url as string, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Webhook-Signature': signature },
-            body: JSON.stringify(payload),
-          }, 10_000)
-          results.push({ webhook_id: wh.id, status: resp.status })
-        } catch (err) {
-          results.push({ webhook_id: wh.id, error: (err as Error).message })
-        }
+      const results: { webhook_id: string; status?: number; error?: string }[] = []
+
+      const CHUNK_SIZE = 10
+      for (let i = 0; i < webhooks.length; i += CHUNK_SIZE) {
+        const chunk = webhooks.slice(i, i + CHUNK_SIZE)
+        const chunkResults = await Promise.all(
+          chunk.map(async (wh) => {
+            try {
+              assertExternalUrl(wh.url as string)
+              const signature = crypto.createHmac('sha256', wh.secret as string).update(JSON.stringify(payload)).digest('hex')
+              const resp = await fetchWithTimeout(wh.url as string, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Webhook-Signature': signature },
+                body: JSON.stringify(payload),
+              }, 10_000)
+              return { webhook_id: wh.id as string, status: resp.status }
+            } catch (err) {
+              return { webhook_id: wh.id as string, error: (err as Error).message }
+            }
+          })
+        )
+        results.push(...chunkResults)
       }
       return ok({ event, triggered: webhooks.length, results })
     },
