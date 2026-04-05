@@ -4,7 +4,15 @@ import {
   generateSlug,
   hasScope,
   generateApiKey,
+  apiError,
 } from '@/lib/api-helpers'
+
+// Mock next/server for NextResponse testing
+vi.mock('next/server', () => ({
+  NextResponse: {
+    json: vi.fn((body, init) => ({ body, init }))
+  }
+}))
 
 // Mock modules that depend on runtime
 vi.mock('@/lib/db', () => ({
@@ -160,5 +168,33 @@ describe('generateApiKey', () => {
     const { key } = generateApiKey()
     // Prefix 'ob_' (3) + 32 bytes hex (64) = 67 characters
     expect(key.length).toBe(67)
+  })
+})
+
+describe('apiError', () => {
+  it('returns a well-structured error response with default status 400', () => {
+    const result = apiError('INVALID_INPUT', 'The input provided is invalid.') as any;
+
+    expect(result.init?.status).toBe(400);
+    expect(result.body?.success).toBe(false);
+    expect(result.body?.error?.code).toBe('INVALID_INPUT');
+    expect(result.body?.error?.message).toBe('The input provided is invalid.');
+    expect(result.body?.error?.details).toBeUndefined();
+    expect(result.body?.meta?.request_id).toBeDefined();
+    expect(typeof result.body?.meta?.request_id).toBe('string');
+  })
+
+  it('returns a response with a custom status code', () => {
+    const result = apiError('NOT_FOUND', 'Resource not found', 404) as any;
+
+    expect(result.init?.status).toBe(404);
+    expect(result.body?.error?.code).toBe('NOT_FOUND');
+  })
+
+  it('includes the provided details object', () => {
+    const details = { field: 'email', reason: 'already exists' };
+    const result = apiError('CONFLICT', 'Conflict', 409, details) as any;
+
+    expect(result.body?.error?.details).toEqual(details);
   })
 })
