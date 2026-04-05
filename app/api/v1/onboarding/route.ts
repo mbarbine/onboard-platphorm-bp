@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { sql } from '@/lib/db'
 import { apiResponse, apiError } from '@/lib/api-helpers'
 import { v4 as uuidv4 } from 'uuid'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,20 +47,20 @@ export async function POST(request: NextRequest) {
 
         if (!domainRes.ok) {
           const errorData = await domainRes.json()
-          console.error('Failed to create Vercel domain:', errorData)
+          logger.error('Failed to create Vercel domain:', { errorData })
           // We don't fail the entire request, just log it
         } else {
-          console.log(`Successfully created Vercel domain ${domain}`)
+          logger.info(`Successfully created Vercel domain ${domain}`)
         }
-      } catch (err) {
-        console.error('Vercel API error:', err)
+      } catch (err: unknown) {
+        logger.error('Vercel API error:', { error: err instanceof Error ? err : String(err) })
       }
     }
 
     return apiResponse(tenant, undefined, 201)
-  } catch (error: any) {
-    console.error('Error creating tenant:', error)
-    if (error.code === '23505') { // Postgres unique violation
+  } catch (error: unknown) {
+    logger.error('Error creating tenant:', { error: error instanceof Error ? error : String(error) })
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === '23505') { // Postgres unique violation
       return apiError('CONFLICT', 'Tenant with this slug already exists', 409)
     }
     return apiError('CREATE_ERROR', 'Failed to create tenant', 500)
