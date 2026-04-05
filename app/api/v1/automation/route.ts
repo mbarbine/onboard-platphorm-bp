@@ -315,17 +315,29 @@ async function handleEmojiSummaries(params: { document_ids?: string[], all?: boo
   }
 
   const results = []
-  for (const doc of documents) {
-    const summary = await generateEmojiSummary(doc.content as string, doc.title as string)
+
+  // Generate summaries in parallel (concurrency limit)
+  for (let i = 0; i < documents.length; i += 10) {
+    const batch = documents.slice(i, i + 10)
+    const batchResults = await Promise.all(batch.map(async (doc) => {
+      const summary = await generateEmojiSummary(doc.content as string, doc.title as string)
+      return { id: doc.id, emoji_summary: summary.emojis }
+    }))
+    results.push(...batchResults)
+  }
+
+  // Batch update database to prevent N+1 queries
+  if (results.length > 0) {
+    const ids = results.map(r => r.id)
+    const summaries = results.map(r => r.emoji_summary)
     
     await sql`
-      UPDATE documents SET
-        emoji_summary = ${summary.emojis},
+      UPDATE documents AS t SET
+        emoji_summary = u.summary::text,
         updated_at = NOW()
-      WHERE id = ${doc.id}
+      FROM UNNEST(${ids}::uuid[], ${summaries}::text[]) AS u(id, summary)
+      WHERE t.id = u.id
     `
-
-    results.push({ id: doc.id, emoji_summary: summary.emojis })
   }
 
   return NextResponse.json({
