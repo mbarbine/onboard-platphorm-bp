@@ -133,19 +133,32 @@ export async function PUT(request: NextRequest) {
     }
     
     // Update integrations
-    if (integrations && Array.isArray(integrations)) {
-      for (const integration of integrations) {
-        await sql`
-          UPDATE integrations 
-          SET base_url = ${integration.base_url},
-              api_path = ${integration.api_path || '/api'},
-              mcp_path = ${integration.mcp_path || '/api/mcp'},
-              enabled = ${integration.enabled},
-              settings = ${JSON.stringify(integration.settings || {})},
-              updated_at = NOW()
-          WHERE id = ${integration.id} AND tenant_id = ${DEFAULT_TENANT}
-        `
-      }
+    if (integrations && Array.isArray(integrations) && integrations.length > 0) {
+      const ids = integrations.map((i: any) => i.id)
+      const baseUrls = integrations.map((i: any) => i.base_url)
+      const apiPaths = integrations.map((i: any) => i.api_path || '/api')
+      const mcpPaths = integrations.map((i: any) => i.mcp_path || '/api/mcp')
+      const enableds = integrations.map((i: any) => i.enabled)
+      const settingsArray = integrations.map((i: any) => JSON.stringify(i.settings || {}))
+
+      await sql`
+        UPDATE integrations AS i
+        SET base_url = u.base_url,
+            api_path = u.api_path,
+            mcp_path = u.mcp_path,
+            enabled = u.enabled,
+            settings = u.settings::jsonb,
+            updated_at = NOW()
+        FROM UNNEST(
+          ${ids}::text[],
+          ${baseUrls}::text[],
+          ${apiPaths}::text[],
+          ${mcpPaths}::text[],
+          ${enableds}::boolean[],
+          ${settingsArray}::jsonb[]
+        ) AS u(id, base_url, api_path, mcp_path, enabled, settings)
+        WHERE i.id = u.id AND i.tenant_id = ${DEFAULT_TENANT}
+      `
     }
     
     return NextResponse.json({
