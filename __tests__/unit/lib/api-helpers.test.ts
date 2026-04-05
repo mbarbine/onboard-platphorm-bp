@@ -1,9 +1,14 @@
-import { describe, it, expect, vi } from 'vitest'
+import { sql } from '@/lib/db'
+import { logger } from '@/lib/logger'
+import { WEBHOOK_SIGNATURE_HEADER, WEBHOOK_EVENT_HEADER } from '@/lib/site-config'
+import crypto from 'crypto'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   getPaginationParams,
   generateSlug,
   hasScope,
   generateApiKey,
+  triggerWebhooks,
 } from '@/lib/api-helpers'
 
 // Mock modules that depend on runtime
@@ -12,9 +17,24 @@ vi.mock('@/lib/db', () => ({
   DEFAULT_TENANT_ID: '00000000-0000-0000-0000-000000000001',
 }))
 
+vi.mock('@/lib/logger', () => ({
+  default: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+  },
+  logger: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+  }
+}))
+
 vi.mock('@/lib/site-config', () => ({
   API_KEY_PREFIX: 'ob_',
   SERVICE_NAME: 'onboard',
+  WEBHOOK_SIGNATURE_HEADER: 'x-onboard-signature',
+  WEBHOOK_EVENT_HEADER: 'x-onboard-event',
 }))
 
 describe('getPaginationParams', () => {
@@ -160,5 +180,121 @@ describe('generateApiKey', () => {
     const { key } = generateApiKey()
     // Prefix 'ob_' (3) + 32 bytes hex (64) = 67 characters
     expect(key.length).toBe(67)
+  })
+})
+
+describe('triggerWebhooks', () => {
+  // db and logger are mocked via vi.mock
+
+
+
+  const originalFetch = global.fetch
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({}),
+    })
+  })
+
+  afterEach(() => {
+    global.fetch = originalFetch
+  })
+
+  it('successfully triggers webhooks for matching events', async () => {
+    const tenantId = 'test-tenant'
+    const eventType = 'user.created'
+    const payload = { user_id: 123 }
+    const secret = 'test-secret'
+    const webhookUrl = 'https://example.com/webhook'
+    const webhookId = 'webhook-1'
+
+    // Mock first sql call (select webhooks)
+    vi.mocked(sql).mockResolvedValueOnce([
+      { id: webhookId, url: webhookUrl, secret }
+    ])
+    // Mock second sql call (insert delivery)
+    vi.mocked(sql).mockResolvedValueOnce([])
+
+    await triggerWebhooks(tenantId, eventType, payload)
+
+    expect(sql).toHaveBeenCalledTimes(2)
+
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(global.fetch).toHaveBeenCalledWith(
+      webhookUrl,
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+          [WEBHOOK_EVENT_HEADER]: eventType,
+        }),
+        body: JSON.stringify(payload)
+      })
+    )
+
+    // Verify signature
+    const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0]
+    const headers = callArgs[1].headers
+    expect(headers[WEBHOOK_SIGNATURE_HEADER]).toBeDefined()
+    expect(headers[WEBHOOK_SIGNATURE_HEADER].startsWith('sha256=')).toBe(true)
+  })
+
+  it('creates valid HMAC signature', async () => {
+    const tenantId = 'test-tenant'
+    const eventType = 'user.created'
+    const payload = { user_id: 123 }
+    const secret = 'my-secret-key'
+
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(payload))
+      .digest('hex')
+
+    vi.mocked(sql).mockResolvedValueOnce([{ id: 'w1', url: 'https://example.com', secret }])
+    vi.mocked(sql).mockResolvedValueOnce([])
+
+    await triggerWebhooks(tenantId, eventType, payload)
+
+    const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0]
+    const headers = callArgs[1].headers
+    expect(headers[WEBHOOK_SIGNATURE_HEADER]).toBe(`sha256=${expectedSignature}`)
+  })
+
+  it('handles database fetch returning no webhooks', async () => {
+    vi.mocked(sql).mockResolvedValueOnce([])
+
+    await triggerWebhooks('tenant', 'event', {})
+
+    expect(sql).toHaveBeenCalledTimes(1)
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('handles fetch errors gracefully', async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
+
+    vi.mocked(sql).mockResolvedValueOnce([{ id: 'w1', url: 'https://example.com', secret: 'sec' }])
+    vi.mocked(sql).mockResolvedValueOnce([])
+
+    // Should not throw
+    await triggerWebhooks('tenant', 'event', {})
+
+    expect(global.fetch).toHaveBeenCalled()
+    // It shouldn't log error because fetch is fire-and-forget and catches its own error
+    expect(logger.error).not.toHaveBeenCalled()
+  })
+
+  it('handles database errors gracefully', async () => {
+    const error = new Error('DB Error')
+    vi.mocked(sql).mockRejectedValueOnce(error)
+
+    await triggerWebhooks('tenant', 'event', {})
+
+    expect(logger.error).toHaveBeenCalledWith(
+      'Failed to trigger webhooks',
+      { error }
+    )
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 })
