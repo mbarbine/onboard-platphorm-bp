@@ -1,9 +1,48 @@
+import dns from 'dns/promises'
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from './db'
 import { APIResponse } from './api-types'
 import { API_KEY_PREFIX, WEBHOOK_SIGNATURE_HEADER, WEBHOOK_EVENT_HEADER } from './site-config'
 import crypto from 'crypto'
 import { logger } from './logger'
+
+
+const BLOCKED_HOST_PATTERNS = [
+  /^localhost$/,
+  /^127\.\d+\.\d+\.\d+$/,
+  /^10\.\d+\.\d+\.\d+$/,
+  /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/,
+  /^192\.168\.\d+\.\d+$/,
+  /^169\.254\.\d+\.\d+$/,
+  /^0\.0\.0\.0$/,
+  /^::1?$/,
+  /^metadata\.google\.internal$/
+]
+
+export async function assertExternalUrl(raw: string): Promise<URL> {
+  const parsed = new URL(raw)
+  if (!['http:', 'https:'].includes(parsed.protocol)) {
+    throw new Error('Only HTTP and HTTPS URLs are allowed')
+  }
+  const hostname = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, '')
+  if (BLOCKED_HOST_PATTERNS.some(p => p.test(hostname))) {
+    throw new Error('URLs pointing to internal or private networks are not allowed')
+  }
+
+  try {
+    const { address } = await dns.lookup(hostname)
+    if (BLOCKED_HOST_PATTERNS.some(p => p.test(address))) {
+      throw new Error('Resolved IP points to internal or private networks')
+    }
+  } catch (err: any) {
+    if (err.code === 'ENOTFOUND') {
+      throw new Error('Host not found')
+    }
+    throw err;
+  }
+
+  return parsed
+}
 
 export function generateRequestId(): string {
   return crypto.randomUUID()
@@ -168,18 +207,26 @@ export async function triggerWebhooks(
       `
 
       // Fire and forget with timeout - in production you'd use a queue
-      const deliveryController = new AbortController()
-      const deliveryTimeout = setTimeout(() => deliveryController.abort(), 10000) // 10s timeout
-      fetch(webhook.url as string, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          [WEBHOOK_SIGNATURE_HEADER]: `sha256=${signature}`,
-          [WEBHOOK_EVENT_HEADER]: eventType,
-        },
-        body: JSON.stringify(payload),
-        signal: deliveryController.signal,
-      }).catch(() => {}).finally(() => clearTimeout(deliveryTimeout))
+      try {
+        await assertExternalUrl(webhook.url as string)
+        const deliveryController = new AbortController()
+        const deliveryTimeout = setTimeout(() => deliveryController.abort(), 10000) // 10s timeout
+        fetch(webhook.url as string, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            [WEBHOOK_SIGNATURE_HEADER]: `sha256=${signature}`,
+            [WEBHOOK_EVENT_HEADER]: eventType,
+          },
+          body: JSON.stringify(payload),
+          signal: deliveryController.signal,
+        }).catch(() => {}).finally(() => clearTimeout(deliveryTimeout))
+      } catch (err) {
+        logger.error('Invalid webhook URL for delivery', {
+          error: err instanceof Error ? err : String(err),
+          webhookId: webhook.id
+        })
+      }
     }
   } catch (error) {
     logger.error('Failed to trigger webhooks', { error: error instanceof Error ? error : String(error) })
