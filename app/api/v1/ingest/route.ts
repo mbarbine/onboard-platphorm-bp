@@ -289,14 +289,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch the URL content
+    // Mitigate DNS rebinding SSRF by using the resolved IP for the actual request,
+    // while passing the original hostname in the Host header.
+    const isIPv6 = resolvedIp.includes(':')
+    const safeHostname = isIPv6 ? `[${resolvedIp}]` : resolvedIp
+    const safeUrl = new URL(parsedUrl.href)
+    safeUrl.hostname = safeHostname
+
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 30000) // 30s timeout
     let fetchResponse: Response
     try {
-      fetchResponse = await fetch(url, {
+      fetchResponse = await fetch(safeUrl.href, {
         headers: {
           'User-Agent': `${SITE_NAME} Ingestion Bot/1.0`,
-          'Accept': 'text/html,application/xhtml+xml,text/markdown,text/plain,application/json'
+          'Accept': 'text/html,application/xhtml+xml,text/markdown,text/plain,application/json',
+          'Host': hostname
         },
         redirect: 'follow',
         signal: controller.signal,

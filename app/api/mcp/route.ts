@@ -1,4 +1,3 @@
-import { DocumentMeta } from "@/lib/seo-generator"
 import { NextResponse } from 'next/server'
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
@@ -651,7 +650,7 @@ export function createMcpServer(): McpServer {
       const searchIndexData: { id: string; content: string }[] = []
 
       for (const p of preparedDocs) {
-        const docId = insertedMap.get(p.slug)
+        const docId = insertedMap.get(p.slug) as string | undefined
         if (docId) {
           searchIndexData.push({ id: docId, content: p.doc.title + ' ' + p.doc.content })
           results.push({ slug: p.slug, status: 'created' })

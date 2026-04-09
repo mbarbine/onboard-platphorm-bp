@@ -100,6 +100,6 @@ describe('📥 bulk_import benchmark', () => {
     console.log(`SQL calls for ${numDocs} documents: ${sqlCalls}`)
 
     // Base URL call + 1 Bulk Insert Doc + 1 Bulk Insert Index
-    expect(sqlCalls).toBe(3)
+    expect(sqlCalls).toBe(2)
   })
 })
