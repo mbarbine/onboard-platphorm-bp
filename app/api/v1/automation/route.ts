@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
 import { generateSEOMetadata, generateShareLinks, generateStructuredData } from '@/lib/seo-generator'
 import { generateEmojiSummary } from '@/lib/emoji'
@@ -105,7 +106,7 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
         WHERE id = ${doc.id}
       `
 
-      results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+      results.push({ id: doc.id as string, slug: doc.slug as string, status: 'updated' })
     }))
   }
 
