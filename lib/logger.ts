@@ -9,6 +9,7 @@
  */
 
 import { SERVICE_NAME } from './site-config'
+import crypto from 'crypto'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
@@ -227,7 +228,7 @@ export const logger = new Logger()
 
 // Request ID generator
 export function generateRequestId(): string {
-  return `req_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`
+  return `req_${crypto.randomUUID()}`
 }
 
 // Middleware helper to extract request context

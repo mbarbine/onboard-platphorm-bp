@@ -144,18 +144,16 @@ describe('generateRequestId', () => {
     expect(ids.size).toBe(100)
   })
 
-  it('has correct format with three underscore-separated parts', () => {
+  it('has correct format with req_ prefix and UUID', () => {
     const id = generateRequestId()
-    const parts = id.split('_')
-    expect(parts.length).toBe(3)
-    expect(parts[0]).toBe('req')
+    expect(id).toMatch(/^req_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
   })
 
-  it('contains only alphanumeric characters in the variable parts', () => {
+  it('contains only valid characters', () => {
     const id = generateRequestId()
-    const parts = id.split('_')
-    expect(parts[1]).toMatch(/^[a-z0-9]+$/)
-    expect(parts[2]).toMatch(/^[a-z0-9]+$/)
+    const uuidPart = id.split('_')[1]
+    // UUIDs have dashes, so we check for alphanumeric + dashes
+    expect(uuidPart).toMatch(/^[a-z0-9-]+$/)
   })
 })
 
