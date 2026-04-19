@@ -109,19 +109,22 @@ export async function PUT(request: NextRequest) {
     
     // Update settings
     if (settings) {
-      const entries = Object.entries(settings).filter(([k]) => k !== 'password_is_set');
-
-      if (entries.length > 0) {
-        const keys = entries.map(([k]) => k);
-        const values = entries.map(([, v]) => JSON.stringify(v));
-        const tenantIds = Array(keys.length).fill(DEFAULT_TENANT);
-        
+      const settingsEntries = Object.entries(settings).filter(([key]) => key !== 'password_is_set')
+      if (settingsEntries.length > 0) {
         await sql`
           INSERT INTO settings (tenant_id, key, value, updated_at)
-          SELECT * FROM UNNEST(${tenantIds}::uuid[], ${keys}::text[], ${values}::jsonb[], ARRAY(SELECT NOW() FROM generate_series(1, array_length(${keys}::text[], 1)))::timestamp[])
+          SELECT
+            ${DEFAULT_TENANT},
+            u.key,
+            u.value,
+            NOW()
+          FROM UNNEST(
+            ${settingsEntries.map(([key]) => key)}::text[],
+            ${settingsEntries.map(([, value]) => JSON.stringify(value))}::text[]
+          ) AS u(key, value)
           ON CONFLICT (tenant_id, key) 
-          DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
-        `;
+          DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
+        `
       }
     }
     
@@ -137,19 +140,26 @@ export async function PUT(request: NextRequest) {
     }
     
     // Update integrations
-    if (integrations && Array.isArray(integrations)) {
-      await Promise.all(
-        integrations.map(integration => sql`
-          UPDATE integrations 
-          SET base_url = ${integration.base_url},
-              api_path = ${integration.api_path || '/api'},
-              mcp_path = ${integration.mcp_path || '/api/mcp'},
-              enabled = ${integration.enabled},
-              settings = ${JSON.stringify(integration.settings || {})},
-              updated_at = NOW()
-          WHERE id = ${integration.id} AND tenant_id = ${DEFAULT_TENANT}
-        `)
-      )
+    if (integrations && Array.isArray(integrations) && integrations.length > 0) {
+      await sql`
+        UPDATE integrations AS i
+        SET
+          base_url = u.base_url,
+          api_path = u.api_path,
+          mcp_path = u.mcp_path,
+          enabled = u.enabled,
+          settings = u.settings,
+          updated_at = NOW()
+        FROM UNNEST(
+          ${integrations.map(i => i.id)}::uuid[],
+          ${integrations.map(i => i.base_url)}::text[],
+          ${integrations.map(i => i.api_path || '/api')}::text[],
+          ${integrations.map(i => i.mcp_path || '/api/mcp')}::text[],
+          ${integrations.map(i => !!i.enabled)}::boolean[],
+          ${integrations.map(i => JSON.stringify(i.settings || {}))}::jsonb[]
+        ) AS u(id, base_url, api_path, mcp_path, enabled, settings)
+        WHERE i.id = u.id AND i.tenant_id = ${DEFAULT_TENANT}
+      `
     }
     
     return NextResponse.json({
