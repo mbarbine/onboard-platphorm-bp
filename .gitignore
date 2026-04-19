@@ -13,3 +13,4 @@ node_modules/
 # Build artifacts
 *.tsbuildinfo
 package-lock.json
+*.orig

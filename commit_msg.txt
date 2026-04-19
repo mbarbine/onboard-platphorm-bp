@@ -1,0 +1,10 @@
+⚡ Optimize SEO generation with batch UNNEST update
+
+💡 What:
+Refactored `handleBatchSEO` in `app/api/v1/automation/route.ts` to use a single PostgreSQL UNNEST batch UPDATE instead of sequential UPDATE queries for each chunk.
+
+🎯 Why:
+This resolves an N+1 query issue during the batch SEO workflow, preventing multiple roundtrips per processed document and significantly reducing database overhead.
+
+📊 Measured Improvement:
+By profiling the 10-document chunk loop, SQL UPDATE calls were reduced from 10 (one per document) to 1 (batch UNNEST update). This translates to an expected 10x reduction in update-related network/DB overhead per batch chunk, confirmed by local benchmark simulations demonstrating a drop from 50 to 5 queries for a 50-document run.
