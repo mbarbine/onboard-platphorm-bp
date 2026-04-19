@@ -3,10 +3,10 @@ import { sql, DEFAULT_TENANT_ID } from './db'
 import { APIResponse } from './api-types'
 import { API_KEY_PREFIX, WEBHOOK_SIGNATURE_HEADER, WEBHOOK_EVENT_HEADER } from './site-config'
 import crypto from 'crypto'
-import { logger } from './logger'
+import { logger, generateRequestId as loggerGenerateRequestId } from './logger'
 
 export function generateRequestId(): string {
-  return crypto.randomUUID()
+  return loggerGenerateRequestId()
 }
 
 export function apiResponse<T>(

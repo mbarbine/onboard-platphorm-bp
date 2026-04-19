@@ -1,7 +1,9 @@
+import logger from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, DEFAULT_TENANT_ID } from '@/lib/db'
 import { generateSEOMetadata, generateShareLinks, generateStructuredData } from '@/lib/seo-generator'
 import { generateEmojiSummary } from '@/lib/emoji'
+import logger from '@/lib/logger'
 import { parseMarkdown, extractTableOfContents } from '@/lib/markdown'
 import {  SITE_NAME , BASE_URL } from '@/lib/site-config'
 
@@ -84,7 +86,7 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
   for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
     const chunk = documents.slice(i, i + CHUNK_SIZE)
 
-    await Promise.all(chunk.map(async (doc) => {
+    const chunkResults = await Promise.all(chunk.map(async (doc) => {
       const seo = await generateSEOMetadata({
         title: doc.title as string,
         description: doc.description as string || '',
@@ -92,20 +94,46 @@ async function handleBatchSEO(params: { document_ids?: string[], all?: boolean }
         slug: doc.slug as string,
         category: doc.category as string,
       }, baseUrl)
+      return { doc, seo }
+    }))
 
-      await sql`
-        UPDATE documents SET
-          og_title = ${seo.ogTitle},
-          og_description = ${seo.ogDescription},
-          og_image = ${seo.ogImage},
-          canonical_url = ${seo.canonicalUrl},
-          reading_time_minutes = ${seo.readingTimeMinutes},
-          word_count = ${seo.wordCount},
-          updated_at = NOW()
-        WHERE id = ${doc.id}
-      `
+    const ids = chunkResults.map(r => r.doc.id as string)
+    const ogTitles = chunkResults.map(r => r.seo.ogTitle)
+    const ogDescriptions = chunkResults.map(r => r.seo.ogDescription)
+    const ogImages = chunkResults.map(r => r.seo.ogImage)
+    const canonicalUrls = chunkResults.map(r => r.seo.canonicalUrl)
+    const readingTimeMinutes = chunkResults.map(r => r.seo.readingTimeMinutes)
+    const wordCounts = chunkResults.map(r => r.seo.wordCount)
 
-      results.push({ id: doc.id, slug: doc.slug, status: 'updated' })
+    await sql`
+      UPDATE documents AS d
+      SET
+        og_title = data.og_title,
+        og_description = data.og_description,
+        og_image = data.og_image,
+        canonical_url = data.canonical_url,
+        reading_time_minutes = data.reading_time_minutes,
+        word_count = data.word_count,
+        updated_at = NOW()
+      FROM (
+        SELECT * FROM UNNEST(
+          ${ids}::uuid[],
+          ${ogTitles}::text[],
+          ${ogDescriptions}::text[],
+          ${ogImages}::text[],
+          ${canonicalUrls}::text[],
+          ${readingTimeMinutes}::int[],
+          ${wordCounts}::int[]
+        ) AS t(id, og_title, og_description, og_image, canonical_url, reading_time_minutes, word_count)
+      ) AS data
+      WHERE d.id = data.id
+    `
+
+    for (const { doc } of chunkResults) {
+      results.push({ id: doc.id as string, slug: doc.slug as string, status: 'updated' })
+    }
+      results.push({ id: String(doc.id), slug: String(doc.slug), status: 'updated' })
+      results.push({ id: doc.id as string, slug: doc.slug as string, status: 'updated' })
     }))
   }
 
@@ -139,18 +167,25 @@ async function handleBatchIndex(params: { document_ids?: string[], all?: boolean
   }
 
   let indexed = 0
-  for (const doc of documents) {
-    const searchText = `${doc.title} ${doc.description || ''} ${doc.content}`
-    
-    // Upsert search index
+  if (documents.length > 0) {
+    const documentIds = documents.map((doc: any) => doc.id)
+    const tenantIds = documents.map((doc: any) => doc.tenant_id)
+    const searchTexts = documents.map((doc: any) => `${doc.title} ${doc.description || ''} ${doc.content}`)
+
+    // Upsert search index using UNNEST to avoid N+1 queries
     await sql`
       INSERT INTO search_index (document_id, tenant_id, content_vector)
-      VALUES (${doc.id}, ${doc.tenant_id}, to_tsvector('english', ${searchText}))
+      SELECT document_id, tenant_id, to_tsvector('english', search_text)
+      FROM UNNEST(
+        ${documentIds}::uuid[],
+        ${tenantIds}::uuid[],
+        ${searchTexts}::text[]
+      ) AS t(document_id, tenant_id, search_text)
       ON CONFLICT (document_id) DO UPDATE SET
-        content_vector = to_tsvector('english', ${searchText}),
+        content_vector = EXCLUDED.content_vector,
         updated_at = NOW()
     `
-    indexed++
+    indexed = documents.length
   }
 
   return NextResponse.json({
@@ -314,18 +349,35 @@ async function handleEmojiSummaries(params: { document_ids?: string[], all?: boo
     return NextResponse.json({ success: false, error: 'Provide document_ids or set all=true' }, { status: 400 })
   }
 
-  const results = []
-  for (const doc of documents) {
-    const summary = await generateEmojiSummary(doc.content as string, doc.title as string)
-    
-    await sql`
-      UPDATE documents SET
-        emoji_summary = ${summary.emojis},
-        updated_at = NOW()
-      WHERE id = ${doc.id}
-    `
+  const CHUNK_SIZE = 10
+  const results: Array<{ id: string, emoji_summary: string }> = []
 
-    results.push({ id: doc.id, emoji_summary: summary.emojis })
+  for (let i = 0; i < documents.length; i += CHUNK_SIZE) {
+    const chunk = documents.slice(i, i + CHUNK_SIZE)
+    
+    const chunkResults = await Promise.all(chunk.map(async (doc) => {
+      const summary = await generateEmojiSummary(doc.content as string, doc.title as string)
+      return { id: doc.id as string, emoji_summary: summary.emojis }
+    }))
+
+    if (chunkResults.length > 0) {
+      const ids = chunkResults.map(r => r.id)
+      const emojis = chunkResults.map(r => r.emoji_summary)
+
+      await sql`
+        UPDATE documents SET
+          emoji_summary = update_data.emoji_summary,
+          updated_at = NOW()
+        FROM UNNEST(
+          ${ids}::uuid[],
+          ${emojis}::text[]
+        ) AS update_data(id, emoji_summary)
+        WHERE documents.id = update_data.id
+      `
+
+    results.push({ id: doc.id as string, emoji_summary: summary.emojis })
+      results.push(...chunkResults)
+    }
   }
 
   return NextResponse.json({
