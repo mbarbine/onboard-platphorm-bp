@@ -653,7 +653,7 @@ export function createMcpServer(): McpServer {
       for (const p of preparedDocs) {
         const docId = insertedMap.get(p.slug)
         if (docId) {
-          searchIndexData.push({ id: String(docId), content: p.doc.title + ' ' + p.doc.content })
+          searchIndexData.push({ id: docId as string, content: p.doc.title + ' ' + p.doc.content })
           results.push({ slug: p.slug, status: 'created' })
         } else {
           results.push({ slug: p.slug, status: 'skipped (exists)' })
