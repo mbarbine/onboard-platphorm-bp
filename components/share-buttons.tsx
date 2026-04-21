@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -171,7 +171,7 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
               size="sm"
               className="h-8 w-8 p-0"
               onClick={copyToClipboard}
-              aria-label="Copy link"
+              aria-label={copied ? 'Copied!' : 'Copy link'}
             >
               {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
             </Button>
@@ -186,6 +186,8 @@ export function ShareButtons({ url, title, description = '', compact = false }: 
 // Full share dialog for more detailed sharing
 export function ShareDialog({ url, title, description = '' }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false)
+  const inputId = useId()
+  const shareOnId = useId()
 
   const shareLinks: ShareLink[] = [
     { name: 'Twitter / X', icon: '𝕏', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}` },
@@ -209,9 +211,10 @@ export function ShareDialog({ url, title, description = '' }: ShareButtonsProps)
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Share link</label>
+        <label htmlFor={inputId} className="text-sm font-medium">Share link</label>
         <div className="flex gap-2">
           <input
+            id={inputId}
             type="text"
             value={url}
             readOnly
@@ -225,8 +228,8 @@ export function ShareDialog({ url, title, description = '' }: ShareButtonsProps)
       </div>
       
       <div className="space-y-2">
-        <label className="text-sm font-medium">Share on</label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div id={shareOnId} className="text-sm font-medium">Share on</div>
+        <div role="group" aria-labelledby={shareOnId} className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {shareLinks.map((link) => (
             <Button
               key={link.name}
