@@ -15,12 +15,22 @@ const DEFAULTS: Record<string, string> = {
   github_repo: JSON.stringify(GITHUB_REPO),
 }
 
-function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex')
+export function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16).toString('hex')
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex')
+  return `${salt}:${hash}`
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash
+export function verifyPassword(password: string, storedHash: string): boolean {
+  if (storedHash.includes(':')) {
+    const [salt, hash] = storedHash.split(':')
+    const verifyHash = crypto.scryptSync(password, salt, 64).toString('hex')
+    return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(verifyHash, 'hex'))
+  }
+
+  // Backward compatibility for legacy SHA-256 hashes
+  const legacyHash = crypto.createHash('sha256').update(password).digest('hex')
+  return crypto.timingSafeEqual(Buffer.from(storedHash, 'hex'), Buffer.from(legacyHash, 'hex'))
 }
 
 export async function GET() {
