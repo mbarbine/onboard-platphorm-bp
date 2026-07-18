@@ -13,7 +13,7 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mbarbine/onboard-platphorm-bp)
+
 
 ## What It Does
 
@@ -60,7 +60,7 @@ See [API.md](API.md) for full reference.
 
 ## Ops Bootstrap
 
-Create kanban tasks, provision a v0 project, and register this service to MCP/network graph:
+Create kanban tasks, provision a project, and register this service to MCP/network graph:
 
 ```bash
 pnpm ops:provision
