@@ -5,6 +5,7 @@
  */
 
 import { BASE_URL } from '../lib/site-config'
+import logger from '../lib/logger'
 
 interface TestResult {
   name: string
